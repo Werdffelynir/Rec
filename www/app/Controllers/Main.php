@@ -6,11 +6,6 @@ use \app\Base;
 
 class Main extends Base
 {
-    public function index()
-    {
-        echo $this->title;
-        echo ' class Main';
-    }
 
     public function init(){
         //echo 'init';
@@ -24,17 +19,15 @@ class Main extends Base
         //echo 'afterAction';
     }
 
-    public function test()
+    public function index()
     {
-        echo ' class Main test';
-    }
-
-    public function page()
-    {
-        echo ' class Main page';
-    }
-    public function main()
-    {
+        echo $this->title;
         $this->render('//content');
     }
+
+    public function home()
+    {
+        $this->render('home',['text'=>'Home Page']);
+    }
+
 } 

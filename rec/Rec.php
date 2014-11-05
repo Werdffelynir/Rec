@@ -10,6 +10,7 @@ class Rec
     /** @var string $applicationName */
     public static $applicationName = 'Web Application';
 
+    public static $protocol = null;
     /** @var null $url */
     public static $url = null;
     /** @var null $urlFull */
@@ -18,6 +19,7 @@ class Rec
     public static $urlPart = null;
     /** @var null $urlDomain */
     public static $urlDomain = null;
+    public static $urlCurrent = null;
 
     /** @var null $path 'D:/server/domains/test.loc/rec/' */
     public static $path = null;
@@ -46,7 +48,8 @@ class Rec
         self::$urlDomain = $_SERVER['HTTP_HOST'];
         self::$urlFull = self::$urlDomain . self::$urlPart;
         self::$url = self::$urlPart;
-
+        self::$protocol = ($_SERVER['REQUEST_URI']=='on')?'https://':'http://';
+        self::$urlCurrent = self::$protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
         self::$path = substr($_SERVER['SCRIPT_FILENAME'], 0, -9);
         self::$pathApp = ($appPath == null) ? self::$path : self::$path . $appPath.'/';
         $this->request = rtrim(str_replace(self::$urlPart, '', $_SERVER['REQUEST_URI']), '/');
@@ -124,6 +127,7 @@ class Rec
      */
     private function autoloadClasses()
     {
+        include_once($this->recPath.'/Component.php');
         include_once($this->recPath.'/Controller.php');
         include_once($this->recPath.'/Request.php');
         include_once($this->recPath.'/Model.php');
@@ -264,58 +268,34 @@ class Rec
         try {
             throw new \Exception("TRUE.");
         } catch (\Exception $e) {
-            echo "<!doctype html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <title>Rec: " . $errorMsg . "</title>
-    <style>
-        body,html{
-            margin:0;padding:0;
-            font-family: 'Ubuntu Condensed', 'Ubuntu', sans-serif;
-        }
-        .box{
-            min-height: 600px;
-            padding: 10px;
-            font-size: 11px;
-            color:#FFF;
-            background: #0033FF;
-        }
-        .description{display: block; padding: 10px; color:#828282;}
-    </style>
-</head>
-<body>
-    <div  class='box'>
 
-        <h2 style='font-size: 14px; color:#FF9900;'>Warning! throw Exception. </h2>
+            echo "<!doctype html><html lang='en'><head><meta charset='UTF-8'><title>Exception</title>
+                <style>
+                    body, html {margin: 0;  padding: 0;  font-family: 'Ubuntu Condensed', 'Ubuntu', sans-serif;  background: #F5EFEF;}
+                    .box404 { display: block; width: 800px;  margin: 10px auto;  padding: 15px;  font-size: 12px;  color: #EC7604;
+                    background: #282B2E;  box-shadow: inset 0 0 8px 2px rgba(54, 0, 0, .8);}
+                    h1 {font-size: 36px; line-height: 36px; margin: 0; padding: 0;  }
+                    h2 {font-size: 14px; line-height: 16px; margin: 0; padding: 0;}
+                    .text{ font-size: 12px; line-height: 16px; margin: 15px 0; padding: 0;color: #e9ebd0; }
+                    a {color: #FFD000;} a:hover {color: #D6F5AD;}
+                    hr{ border: none; width: 100%; height: 2px; background-color: #FFD000;}
+                    code{font-size: 11px; font-weight: bold; font-family: Consolas, Courier New, monospace;color: #9FF565;}
+                    code.block{color: #282B2E; display: block; padding: 10px;background: #F5EFEF}
+                </style>
+                </head><body>
+                <div class='box404'>
+                    <h1>Warning! throw Exception.</h1><hr/>
+                    <a href='".self::$urlCurrent."'>Reload page</a>
+                    <p class='text'><b>Message:</b> <code>" . $errorMsg . "</code></p>
+                    <p class='text'><b>File:</b> <code>" . $fileName . "</code></p>
+                    <h3>Trace As String:</h3>
+                    <code class='block'>" . str_replace('#', '<br> ', $e->getTraceAsString()) ."<br></code>
+                    <h3>Code:</h3>
+                    <code class='block'>" . $e->getCode() . "</code>
+                    <hr/>
+                </div>
+                </body></html>";
 
-        <h2>Message: " . $errorMsg . " </h2>";
-
-            if ($fileName != null):
-                echo "<code style='display: block; padding: 10px; font-size: 12px; font-weight: bold; font-family: Consolas, Courier New, monospace; color:#CBFEFF; background: #000066'>"
-                    . $fileName .
-                    "</code>";
-            endif;
-
-            echo "<div class='description'>
-            Function setup: " . $e->getFile() . "
-            <br>
-            Line: " . $e->getLine() . "
-        </div>
-
-        <h3>Trace As String: </h3>
-        <code style='display: block; padding: 10px; font-size: 12px; font-weight: bold; font-family: Consolas, Courier New, monospace; color:#CBFEFF; background: #000066'>
-            " . str_replace('#', '<br> ', $e->getTraceAsString()) . "<br>
-        </code>
-
-        <h3>Code: </h3>
-        <code style='display: block; padding: 10px; font-size: 12px; font-weight: bold; font-family: Consolas, Courier New, monospace; color:#CBFEFF;  background: #000066'>
-            " . $e->getCode() . "
-        </code>
-
-    </div>
-</body>
-</html>";
             if ($die) die();
         }
 

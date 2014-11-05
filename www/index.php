@@ -24,9 +24,6 @@ $R->urlNotFound('Main/error404');
  * Заметка: Class не должен вызывать метод одноименный себе, например класс Page->page() "Page/page"
  */
 
-$R->urlAdd('Main', 'index');
-$R->urlAdd('Main/test', 'test');
-$R->urlAdd('Main/page', 'page');
-$R->urlAdd('Main/main', 'main');
+$R->urlAdd('Main/home', 'home');
 
 $R->run();
