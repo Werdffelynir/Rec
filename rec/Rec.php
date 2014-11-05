@@ -225,6 +225,7 @@ class Rec
         if(class_exists( $classControllerName ))
         {
             $controllerObj = new $classControllerName;
+            $controllerObj->init();
 
             if (method_exists($controllerObj, self::$action))
             {
@@ -232,11 +233,16 @@ class Rec
                     header("HTTP/1.0 404 Not Found");
 
                 if (empty(self::$params)) {
+
+                    $controllerObj->beforeAction();
                     call_user_func(array($controllerObj, self::$action));
+                    $controllerObj->afterAction();
                     exit;
                 } else {
 
+                    $controllerObj->beforeAction();
                     call_user_func_array(array((object)$controllerObj, self::$action), self::$params );
+                    $controllerObj->afterAction();
                     exit;
                 }
 

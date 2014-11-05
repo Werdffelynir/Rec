@@ -22,14 +22,14 @@ class Controller {
 
     public function __construct()
     {
-        $this->init();
         $this->layoutPosition[$this->layoutPositionDefault] = null;
         $this->applicationName = Rec::$applicationName;
-
         $this->bodyAttr = 'data-url="'.Rec::$url.'"';
     }
 
     public function init(){}
+    public function beforeAction(){}
+    public function afterAction(){}
 
     public function error404()
     {
@@ -39,69 +39,21 @@ class Controller {
         $linkBeck = $_SERVER['HTTP_REFERER'];
         $applicationName = $this->applicationName;
 
-        echo "<!doctype html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <title>$applicationName 404 Not Found</title>
-    <style>
-        body,html{
-            margin:0;padding:0;
-            font-family: 'Ubuntu Condensed', 'Ubuntu', sans-serif;
-        }
-        .box{
-            display: block;
-            min-height: 600px;
-            padding: 10px;
-            font-size: 11px;
-            color:#FFF;
-            background: #0033FF;
-        }
-        .innerBox{
-        }
-        code{
-            display: block;
-            padding: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            font-family: Consolas, Courier New, monospace;
-            color:#CBFEFF;
-            background: #000066;
-        }
-        .header{
-            font-size: 38px;
-            color:#FFD000;
-        }
-        .description{display: block; padding: 10px; color:#828282;}
-         a{
-            display: block;
-            font-size: 12px;
-            color: #FFFFFF;
-            text-decoration: none;;
-        }
-         a:hover{
-            color: #FFD000;
-        }
-    </style>
-</head>
-<body>
-<div class='box'>
-    <div class='innerBox'>
-        <h2 class='header' '>404. That’s an error. </h2>
-        <h2>The requested URL was not found on this server.</h2>
-        <div class='description'>
-             <a href='$linkHome'>Go home </a>
-             <a href='$linkBeck'>Go back </a>
-             <a href='http://google.com'>Go go Google </a>
-        </div>
-
-        <code>
-             <strong>$urlNotFound</strong>
-        </code>
-    </div>
-</div>
-</body>
-</html>";
+        echo "<!doctype html><html lang='en'><head><meta charset='UTF-8'><title>$applicationName 404 Not Found</title>
+            <style>
+                body,html{margin:0;padding:0;font-family: 'Ubuntu Condensed', 'Ubuntu', sans-serif;background: #F5EFEF;}
+                .box404{display: block;height: 300px;width: 600px;margin: 50px auto;padding: 15px;font-size: 12px;color:#EC7604;background: #282B2E;box-shadow: inset 0 0 8px 2px rgba(54,0,0,.8);}
+                h1{ font-size: 48px;} h2{ font-size: 22px;}
+                a{color: #FFFFFF;} a:hover{color: #FFD000;} code>a{color:#EC7604;}
+            </style>
+        </head><body><div class='box404'>
+            <h1>404. That’s an error. </h1>
+            <h2>The requested URL was not found on this server.</h2>
+            <a href='$linkHome'>Go home </a><br>
+            <a href='$linkBeck'>Go back </a><br>
+            <a href='http://google.com'>Go go Google </a><br><br>
+            <code><a href='$urlNotFound'>$urlNotFound</a></code>
+        </div></body></html>";
     }
 
     /**

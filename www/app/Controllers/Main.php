@@ -12,6 +12,18 @@ class Main extends Base
         echo ' class Main';
     }
 
+    public function init(){
+        //echo 'init';
+    }
+
+    public function beforeAction(){
+        //echo 'beforeAction';
+    }
+
+    public function afterAction(){
+        //echo 'afterAction';
+    }
+
     public function test()
     {
         echo ' class Main test';
