@@ -14,7 +14,7 @@
 </head>
 <body <?= $this->bodyAttr?>>
 
-<?= $this->layout('layout')?>
+<?$this->out('layout')?>
 
 <?= $this->body?>
 </body>

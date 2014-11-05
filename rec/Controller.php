@@ -12,17 +12,18 @@ class Controller {
     public $bodyAttr;
     public $head;
     public $body;
+    public $auth = false;
 
     public $applicationName = null;
     public $layout = 'main';
     public $partial = 'main';
 
-    public $layoutPosition = array();
-    public $layoutPositionDefault = 'layout';
+    public $outPosition = array();
+    public $outPositionDefault = 'out';
 
     public function __construct()
     {
-        $this->layoutPosition[$this->layoutPositionDefault] = null;
+        $this->outPosition[$this->outPositionDefault] = null;
         $this->applicationName = Rec::$applicationName;
         $this->bodyAttr = 'data-url="'.Rec::$url.'"';
     }
@@ -64,26 +65,7 @@ class Controller {
         exit;
     }
 
-    /**
-     * @param string $partial   если не пустая строка по умолчанию Views/controller/method.php
-     * @param array $data
-     */
-    public function render($partial='', array $data = array())
-    {
-        $this->layoutPosition[$this->layoutPositionDefault] = $this->renderPartial($partial, $data, true);
-        $this->renderLayout();
-    }
 
-    public function renderLayout()
-    {
-        $viewLayout = Rec::$pathApp.'Views/layout/'.$this->layout.'.php';
-
-        if(is_file($viewLayout))
-            require_once $viewLayout;
-        else
-            die('file not exists '.$viewLayout); //todo: Exception set
-
-    }
 
     /**
      * @param string          $partial    Путь к виду шаблона после 'app/Views/'
@@ -107,18 +89,57 @@ class Controller {
     }
 
 
-    public function layout($position)
+    /**
+     * @param string $partial   если не пустая строка по умолчанию Views/controller/method.php
+     * @param array $data
+     */
+    public function render($partial='//out', array $data = array())
     {
-        echo $this->layoutPosition[$position];
-        return null;
+        $this->outPosition[$this->outPositionDefault] = $this->renderPartial($partial, $data, true);
+        $this->renderLayout();
     }
 
-    public function innerLayout(array $data)
+    public function renderLayout()
+    {
+        $viewLayout = Rec::$pathApp.'Views/layout/'.$this->layout.'.php';
+
+        if(is_file($viewLayout))
+            require_once $viewLayout;
+        else
+            die('file not exists '.$viewLayout); //todo: Exception set
+
+    }
+
+
+    /**
+     * Позиция вывода контента render() в layout шаблоне
+     *
+     * @param string $position
+     */
+    public function out($position='out')
+    {
+        echo $this->outPosition[$position];
+    }
+
+
+    /**
+     * Добавление позиций выводов
+     * Принимает массив, ключ которого название позиции вывода в out($position), а значение его контент
+     *
+     * Например в контолере добавить позиции column1 и column2
+     * $this->addOut([
+     *      'column1'=>'Some Data',
+     *      'column2'=>'Some Data'
+     *  ]);
+     * Теперь в виде данные позиций можно вывести $this->out('column1')
+     *
+     * @param array $data
+     */
+    public function addOut(array $data)
     {
         foreach($data as $variablePosition=>$variableData){
-            $this->layoutPosition[$variablePosition]=$variableData;
+            $this->outPosition[$variablePosition]=$variableData;
         }
-        return null;
     }
 
     public function redirect($url='', $thisApp=true)

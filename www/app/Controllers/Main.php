@@ -21,8 +21,10 @@ class Main extends Base
 
     public function index()
     {
-        echo $this->title;
-        $this->render('//content');
+        $this->render('//out', [
+            'title'=> $this->applicationName,
+            'content'=>'Home Page',
+        ]);
     }
 
     public function home()

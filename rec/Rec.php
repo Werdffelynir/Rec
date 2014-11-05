@@ -10,20 +10,22 @@ class Rec
     /** @var string $applicationName */
     public static $applicationName = 'Web Application';
 
+    /** @var null|string $protocol */
     public static $protocol = null;
-    /** @var null $url */
+    /** @var null|string $url */
     public static $url = null;
-    /** @var null $urlFull */
+    /** @var null|string $urlFull */
     public static $urlFull = null;
-    /** @var null $urlPart */
+    /** @var null|string $urlPart */
     public static $urlPart = null;
-    /** @var null $urlDomain */
+    /** @var null|string $urlDomain */
     public static $urlDomain = null;
+    /** @var null|string $urlCurrent */
     public static $urlCurrent = null;
 
-    /** @var null $path 'D:/server/domains/test.loc/rec/' */
+    /** @var null|string $path 'D:/server/domains/test.loc/rec/' */
     public static $path = null;
-    /** @var null $pathApp 'D:/server/domains/test.loc/rec/app/' */
+    /** @var null|string $pathApp 'D:/server/domains/test.loc/rec/app/' */
     public static $pathApp = null;
 
     /** @var null  */
@@ -48,8 +50,8 @@ class Rec
         self::$urlDomain = $_SERVER['HTTP_HOST'];
         self::$urlFull = self::$urlDomain . self::$urlPart;
         self::$url = self::$urlPart;
-        self::$protocol = ($_SERVER['REQUEST_URI']=='on')?'https://':'http://';
-        self::$urlCurrent = self::$protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+        self::$protocol = ($_SERVER['REQUEST_URI']=='on')?'https':'http';
+        self::$urlCurrent = self::$protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
         self::$path = substr($_SERVER['SCRIPT_FILENAME'], 0, -9);
         self::$pathApp = ($appPath == null) ? self::$path : self::$path . $appPath.'/';
         $this->request = rtrim(str_replace(self::$urlPart, '', $_SERVER['REQUEST_URI']), '/');
@@ -132,6 +134,7 @@ class Rec
         include_once($this->recPath.'/Request.php');
         include_once($this->recPath.'/Model.php');
         include_once($this->recPath.'/RPDO.php');
+        include_once($this->recPath.'/Widgets.php');
 
         spl_autoload_register(array($this, 'autoloadAppClasses'));
     }
@@ -143,27 +146,6 @@ class Rec
             $fileName = $className.'.php';
             if (is_file($fileName))
                 include_once($fileName);
-        } else {
-           /* $fileName = self::$pathApp . 'Controllers/' . $className . '.php';
-            if (is_file($fileName)) {
-                include_once($fileName);
-                exit;
-            }
-            $fileName = self::$pathApp . 'Components/' . $className . '.php';
-            if (is_file($fileName)) {
-                include_once($fileName);
-                exit;
-            }
-            $fileName = self::$pathApp . 'Models/' . $className . '.php';
-            if (is_file($fileName)) {
-                include_once($fileName);
-                exit;
-            }
-            $fileName = self::$pathApp . 'Widgets/' . $className . '.php';
-            if (is_file($fileName)) {
-                include_once($fileName);
-                exit;
-            }*/
         }
     }
 
@@ -174,14 +156,13 @@ class Rec
      */
     public function determineRunParams()
     {
-
         $params = array();
         $classMethods = explode('/', $this->recUrls['recUrlNotFound']);
 
         if($this->request === '' || $this->request === '/')
             $classMethods = explode('/',$this->recUrls['recUrlDefault']);
 
-        if($this->request == 'error404' || $this->request == ' 404')
+        if($this->request == 'error404' || $this->request == '404')
             $classMethods = explode('/',$this->recUrls['recUrlNotFound']);
 
         foreach (array_keys($this->recUrls) as $kr)
@@ -228,6 +209,7 @@ class Rec
         $classControllerName = '\\app\\Controllers\\'.self::$controller;
         if(class_exists( $classControllerName ))
         {
+            /** @var Controller $controllerObj */
             $controllerObj = new $classControllerName;
             $controllerObj->init();
 
@@ -257,7 +239,7 @@ class Rec
         } else {
             if(self::$debug)
                 self::ExceptionError('Class not exists','Class path: '.$definedControllerPath.'<br>Class name: '.self::$controller);
-            \rec\Request::redirect(self::$url.'/error404',0,'404');
+            Request::redirect(self::$url.'/error404',0,'404');
         }
 
     }
