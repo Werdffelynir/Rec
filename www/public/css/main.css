@@ -1,0 +1,91 @@
+/*GRID*/
+.gd_1, .gd_2, .gd_3, .gd_4, .gd_5, .gd_6, .gd_7, .gd_8, .gd_9, .gd_10, .gd_11{display:inline; float:left; margin:0 0 0 0.52083333333333%; list-style:none;} .first{margin-left:0; clear:left;} .full{display:block; width:100%; clear:both;} .clear_line{clear: both; width: 100%; height: 1px; margin-top: -1px;} .clear:before, .clear:after{content: " "; display: table;} .clear:after {clear: both;} .clear {*zoom: 1;} .gd{display:block; width:100%; clear:both;} .gd_1:first-child, .gd_2:first-child, .gd_3:first-child, .gd_4:first-child, .gd_5:first-child, .gd_6:first-child, .gd_7:first-child, .gd_8:first-child, .gd_9:first-child, .gd_10:first-child, .gd_11:first-child{margin-left:0;} .gd_1{width:7.8559027777778%;} .gd_2{width:16.232638888889%;} .gd_3{width:24.609375%;} .gd_4{width:32.986111111111%;} .gd_5{width:41.362847222222%;} .gd_6{width:49.739583333333%;} .gd_7{width:58.116319444444%;} .gd_8{width:66.493055555556%;} .gd_9{width:74.869791666667%;} .gd_10{width:83.246527777778%;} .gd_11{width:91.623263888889%;} *{margin: 0; padding: 0; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; -ms-box-sizing: border-box; box-sizing: border-box;} .hidde{visibility: hidden;} .al_l{text-align: left;} .al_r{text-align: right;} .al_c{text-align: center;} .mg_t{margin-top: 0;} .mg_b{margin-bottom: 0;} .mg_l{margin-left: 0;} .mg_r{margin-right: 0;}
+
+
+
+/** COMMON
+********************************************************** */
+*{}
+html{}
+body{
+    font-family: 'Ubuntu Condensed', 'Ubuntu', sans-serif;
+    font-size: 12px;
+}
+h1{
+    padding: 4px 0 10px;
+}
+h2{
+    padding: 3px 0 8px;
+}
+h3{
+    padding: 1px 0 5px;
+}
+h4{
+
+}
+h5{
+
+}
+p{
+    text-indent: 15px;
+    line-height: 20px;
+    padding-bottom: 10px;
+}
+ol,ul{
+    margin: 10px 0 10px 25px;
+}
+ol li,ul li{
+    line-height: 18px;
+}
+img{
+    border-color: transparent;
+}
+
+
+blockquote{
+    border-left: 2px double #979A9D;
+    margin-left: 20px;
+    padding: 5px 0 5px 10px;
+    font-style: italic;
+    color: #3B3E41;
+    font-family: 'AleksandraC', Consolas, Arial;
+}
+
+
+
+/** HEAD
+********************************************************** */
+
+
+
+/** CONTENT
+********************************************************** */
+
+
+
+/** FOOTER
+********************************************************** */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
