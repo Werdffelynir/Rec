@@ -11,14 +11,33 @@ namespace rec;
 
 class Model
 {
-    public  static $db = null;
-    private static $dbhGroup = null;
+    /** @var RPDO $db */
+    public $db = null;
+    /** @var RPDO $database */
+    public $database = null;
+
+    /** @var int  */
     public  static $connectionCount = 0;
-    private static $_models;
+    /** @var array  */
+    private static $dbhGroup = [];
+    /** @var array  */
+    private static $_models = [];
 
     public function __construct()
     {
         $this->init();
+
+        if(!empty(Rec::$connectionSettings)){
+            foreach(Rec::$connectionSettings as $settKey=>$setValue)
+            {
+                $dbh  = $setValue['dbh'];
+                $user = (isset($setValue['user']))?$setValue['user']:'';
+                $pass = (isset($setValue['pass']))?$setValue['pass']:'';
+
+                /** @var RPDO settKey */
+                $this->$settKey = new RPDO($dbh, $user, $pass);
+            }
+        }
     }
 
 
@@ -30,13 +49,14 @@ class Model
      * обезательно
      *
      * @param   string  $className  Имя класса модели
-     * @return  mixed
+     * @return  mixed|Model
      */
     public static function model($className = __CLASS__)
     {
         if (isset(self::$_models[$className])) {
             return self::$_models[$className];
         } else {
+            /** @var Model $model */
             $model = self::$_models[$className] = new $className();
             return $model;
         }
@@ -67,7 +87,7 @@ class Model
      *                               обращение к подключеню по его имене через метод
      *                               getConnection(name)
      *
-     * @param string $config         Строка конфигурации соединения. Например:<br><br>
+     * @param string $dbhConfig      Строка конфигурации соединения. Например:<br><br>
      *                               # MS SQL Server и Sybase через PDO_DBLIB<br>
      *                                     "mssql:host=localhost;dbname=my_batabase"<br>
      *                                     "sybase:host=localhost;dbname=my_batabase"<br>
@@ -84,12 +104,12 @@ class Model
      * @param string $password       Пароль к базе данных
      * @return bool
      */
-    public static function setConnection($connectionName='db', $config, $name='root', $password='')
+    public static function setConnection($connectionName='db', $dbhConfig, $name='root', $password='')
     {
+        $db = new RPDO($dbhConfig, $name, $password);
 
-        $db = new RPDO($config,$name,$password);
-
-        $db->tableName = $connectionName;
+        $db->connectionName = $connectionName;
+        //$db->$connectionName = $connectionName;
 
         if($db != null){
             self::$connectionCount+=1;
@@ -98,6 +118,7 @@ class Model
         } else
             return false;
     }
+
 
     /**
      * Возвращает установленное соединение
@@ -118,20 +139,20 @@ class Model
      * <pre>
      *
      * @param  string       $name     Имя соединение, при условии что оно существует
-     * @return bool|object
+     * @return bool|RPDO
      */
     public static function getConnection($name=null)
     {
         if(self::$dbhGroup==null) return false;
 
-        if($name==null || count(self::$dbhGroup)==1){
+        if($name==null || count(self::$dbhGroup)>0){
             $db = array_values(self::$dbhGroup);
-            self::$db = $db[0];
             return $db[0];
         }else
             if(!empty(self::$dbhGroup[$name])){
                 return self::$dbhGroup[$name];
             } else
                 return false;
+
     }
 } 

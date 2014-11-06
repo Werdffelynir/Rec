@@ -224,6 +224,7 @@ class Rec
                     call_user_func(array($controllerObj, self::$action));
                     $controllerObj->afterAction();
                     exit;
+
                 } else {
 
                     $controllerObj->beforeAction();
@@ -242,6 +243,15 @@ class Rec
             Request::redirect(self::$url.'/error404',0,'404');
         }
 
+    }
+
+    public static $connectionSettings = [];
+
+    public function connection(array $data)
+    {
+        foreach ($data as $key=>$value) {
+            self::$connectionSettings[$key]=$value;
+        }
     }
 
 

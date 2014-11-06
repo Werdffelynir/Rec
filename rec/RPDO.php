@@ -11,8 +11,13 @@ class RPDO
     /** @var \PDOStatement $STH */
     public static $STH = null;
 
+    /** @var RPDO $db */
+    //public $db = null;
+
     public $sql = null;
+    public $connectionName = null;
     public $tableName = null;
+    public $dbname = null;
     public $config = null;
     public $name = null;
     public $password = null;
@@ -45,12 +50,12 @@ class RPDO
     }
 
 
-    public function __get($name)
+    /*public function __get($name)
     {
         if($name=='db')
             return self::$DB;
 
-    }
+    }*/
 
 
     /**

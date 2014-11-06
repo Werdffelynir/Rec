@@ -49,14 +49,12 @@ class Widgets
 
     public function renderPartial($partial, array $data = array(), $returned=true)
     {
-        if(empty($partial))
-            $_partial = strtolower(Rec::$controller.'/'.Rec::$action);
-        else if(substr($partial,0,2) == '//')
+        if(substr($partial,0,2) == '//')
             $_partial = substr($partial,2);
         else
-            $_partial = strtolower(Rec::$controller).'/'.$partial;
+            $_partial = 'widgets/'.$partial;
 
-        $view = Component::renderPartial($this->$_partial, $data, true);
+        $view = Component::renderPartial($_partial, $data, true);
 
         if($returned) return $view;
         else echo $view;

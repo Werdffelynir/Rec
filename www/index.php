@@ -12,6 +12,21 @@ $R->setApplicationName('Rec 0.3. Default Web Application');
 $R->urlDefault('Main');
 $R->urlNotFound('Main/error404');
 
+/**
+ * Create connection with database
+ */
+$R->connection(
+    [
+        'db' => [
+            'dbh' => 'sqlite:../www/app/Database/documentation.sqlite',
+        ],
+        'dbMysql' => [
+            'dbh' => 'mysql:host=localhost;dbname=test',
+            'user' => 'root',
+            'pass' => ''
+        ],
+    ]
+);
 
 /**
  * Alias to controllers and roles

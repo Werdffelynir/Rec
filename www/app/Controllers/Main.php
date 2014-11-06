@@ -3,13 +3,14 @@
 namespace app\Controllers;
 
 use \app\Base;
+use \app\Models\Pages;
 
 class Main extends Base
 {
 
-    public function init(){
+/*    public function init(){
         //echo 'init';
-    }
+    }*/
 
     public function beforeAction(){
         //echo 'beforeAction';
@@ -29,6 +30,7 @@ class Main extends Base
 
     public function home()
     {
+        $m = Pages::model()->getRecItem();
         $this->render('home',['text'=>'Home Page']);
     }
 
