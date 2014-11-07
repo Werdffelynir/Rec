@@ -35,7 +35,7 @@ class Controller {
     public function error404()
     {
         $linkHome = Rec::$url;
-        $linkBeck = $_SERVER['HTTP_REFERER'];
+        $linkBeck = (isset($_SERVER['HTTP_REFERER']))?$_SERVER['HTTP_REFERER']:'#';
 
         echo "<!doctype html><html lang='en'><head> <meta charset='UTF-8'><title>404 Not Found</title>
                 <style>
@@ -150,6 +150,9 @@ class Controller {
         Request::redirect($url);
     }
 
-
+    public function urlArg($param=false, $element=1)
+    {
+        return Rec::urlArg($param, $element);
+    }
 
 } 

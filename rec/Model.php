@@ -1,93 +1,96 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Werdffelynir
- * Date: 05.11.2014
- * Time: 1:38
- */
 
 namespace rec;
 
-
 class Model
 {
-    /** @var RPDO $db */
-    public $db = null;
-    /** @var RPDO $database */
-    public $database = null;
-
     /** @var int  */
     public  static $connectionCount = 0;
     /** @var array  */
-    private static $dbhGroup = [];
+    private static $models = [];
     /** @var array  */
-    private static $_models = [];
+    private static $connectionStaticStack = [];
 
     public function __construct()
     {
         $this->init();
+    }
 
-        if(!empty(Rec::$connectionSettings)){
-            foreach(Rec::$connectionSettings as $settKey=>$setValue)
-            {
-                $dbh  = $setValue['dbh'];
-                $user = (isset($setValue['user']))?$setValue['user']:'';
-                $pass = (isset($setValue['pass']))?$setValue['pass']:'';
+    public function init(){}
 
-                /** @var RPDO settKey */
-                $this->$settKey = new RPDO($dbh, $user, $pass);
-            }
+    /**
+     * @param $called
+     * @return null|RPDO
+     */
+    public function __get($called)
+    {
+        if(!empty(self::$connectionStaticStack[$called]))
+        {
+            return self::$connectionStaticStack[$called]['rpdo'];
+        }
+        else if($connection = Rec::$connectionSettings[$called])
+        {
+            $dbh  = $connection['dbh'];
+            $user = (isset($connection['user']))?$connection['user']:'';
+            $pass = (isset($connection['pass']))?$connection['pass']:'';
+
+            /** @var RPDO $rPDO */
+            $rPDO = new RPDO($dbh, $user, $pass);
+
+            self::$connectionStaticStack[$called] = [
+                'dbh'=>$dbh,
+                'user'=>$user,
+                'pass'=>$pass,
+                'rpdo'=>$rPDO,
+            ];
+
+            return $rPDO;
+
+        } else {
+            return null;
         }
     }
 
 
-    public function init(){}
-
-
     /**
-     * Метод универсального доступу к моделя, метод переписываеться в создаваемых маделях
-     * обезательно
+     * Метод статического доступу к моделя, в дочернихм моделях, должет быть переопределен:
+     *
+     * <pre>
+     *  public static function model($className = __CLASS__)
+     *  {
+     *      $model = parent::model($className);
+     *      return $model;
+     *  }
+     * </pre>
      *
      * @param   string  $className  Имя класса модели
      * @return  mixed|Model
      */
     public static function model($className = __CLASS__)
     {
-        if (isset(self::$_models[$className])) {
-            return self::$_models[$className];
+        if (isset(self::$models[$className])) {
+            return self::$models[$className];
         } else {
             /** @var Model $model */
-            $model = self::$_models[$className] = new $className();
+            $model = self::$models[$className] = new $className();
             return $model;
         }
     }
 
 
     /**
-     * Установка соединение и проверка соединения
+     * Установка статического соединение
      *
      * <pre>
-     * Пример:
-     * // Создание первого основного подключения
-     * $connect='mysql:host=localhost;dbname=myDatabaseName';
-     * $user='root';
-     * $pass = '';
-     * $DB1Cheack = Model::setConnection('mysql1', $connect, $user, $pass);
-     * if(!$DB1Cheack) die('Not Connect to database!');
-     *
-     *
-     * // Создание второго подключения
-     * $connect='sqlite:D:\server\domains\experement.loc\litemvc\docs\DataBase\database.db';
-     * $DB2Cheack = Model::setConnection('sqlite', $connect);
-     * if(!$DB2Cheack) die('Not Connect to database!');
-     *
+     * //Примеры создание подключений:
+     * $dbSqlite = self::setConnection('db_sqlite','sqlite:database\documentation.sqlite');
+     * $dbMysql = self::setConnection('db_mysql','mysql:host=localhost;dbname=test','user','password');
      * <pre>
      *
-     * @param string $connectionName Имя соединения, обезательно если подключений несколько,
-     *                               обращение к подключеню по его имене через метод
+     * @param string $connectionName Имя соединения, обращение к подключеню осуществляется по его имене через метод
      *                               getConnection(name)
      *
-     * @param string $dbhConfig      Строка конфигурации соединения. Например:<br><br>
+     * @param string $dbh Строка конфигурации соединения. Например:<br><br>
      *                               # MS SQL Server и Sybase через PDO_DBLIB<br>
      *                                     "mssql:host=localhost;dbname=my_batabase"<br>
      *                                     "sybase:host=localhost;dbname=my_batabase"<br>
@@ -100,59 +103,51 @@ class Model
      *
      *                               # Oracle<br>
      *                                     "oci:dbname=//dev.mysite.com:1521/orcl.mysite.com;charset=UTF8"<br>
-     * @param string $name           Имя логин к базе данных
-     * @param string $password       Пароль к базе данных
-     * @return bool
+     *
+     * @param string $user Имя логин к базе данных
+     * @param string $pass Пароль к базе данных
+     * @return bool|RPDO
      */
-    public static function setConnection($connectionName='db', $dbhConfig, $name='root', $password='')
+    public static function setConnection($connectionName, $dbh, $user='', $pass='')
     {
-        $db = new RPDO($dbhConfig, $name, $password);
+            /** @var RPDO $rpdo */
+            $rpdo = new RPDO($dbh, $user, $pass);
 
-        $db->connectionName = $connectionName;
-        //$db->$connectionName = $connectionName;
+            $connectionSettings = [
+                'dbh'=>$dbh,
+                'user'=>$user,
+                'pass'=>$pass,
+                'rpdo'=>$rpdo];
 
-        if($db != null){
-            self::$connectionCount+=1;
-            self::$dbhGroup[$connectionName] = $db;
-            return true;
-        } else
-            return false;
+            self::$connectionStaticStack[$connectionName] = $connectionSettings;
+
+            return $rpdo;
     }
 
 
     /**
-     * Возвращает установленное соединение
+     * Возвращает установленное соединение методом setConnection или с конфигурации
      *
      * <pre>
      * Пример:
      *
      * // Способ выборки статический с основного соединения
-     * $products = Model::$db->query('select * from products where buyPrice>100')->all();
-     *
-     * // Способ выборки первого соединения
-     * $DB1 = $Model::getConnection('mysql');
-     * $products = $DB1->query('select * from products where buyPrice>100')->all();
-     *
-     * // Способ выборки с второго соединения
-     * $DB2 = $Model::getConnection('sqlite');
-     * $result = $DB2->query('SELECT * FROM pages WHERE id>10')->all();
+     * $db = getConnection('db_sqlite');
+     * $products = $db->query('select * from products where buyPrice>100')->all();
      * <pre>
      *
-     * @param  string       $name     Имя соединение, при условии что оно существует
+     * @param  string $connectionName Имя соединение, установленное статическим методом setConnection
      * @return bool|RPDO
      */
-    public static function getConnection($name=null)
+    public static function getConnection($connectionName)
     {
-        if(self::$dbhGroup==null) return false;
+        if(!empty(self::$connectionStaticStack[$connectionName]))
+        {
+            /** @var RPDO $rpdo */
+            $rpdo = self::$connectionStaticStack[$connectionName]['rpdo'];
+            return $rpdo;
 
-        if($name==null || count(self::$dbhGroup)>0){
-            $db = array_values(self::$dbhGroup);
-            return $db[0];
-        }else
-            if(!empty(self::$dbhGroup[$name])){
-                return self::$dbhGroup[$name];
-            } else
-                return false;
-
+        } else
+            return false;
     }
 } 

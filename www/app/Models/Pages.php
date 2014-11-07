@@ -18,11 +18,10 @@ class Pages extends Model
 
     /**
      * @param string $className
-     * @return mixed|$this
+     * @return Model|$this
      */
     public static function model($className = __CLASS__)
     {
-        /** @var Model $model */
         $model = parent::model($className);
         return $model;
     }
@@ -31,10 +30,10 @@ class Pages extends Model
     {
         //$lastId =  $this->db->lastId('items'); //getAll('items'); // query('select * from items where id=1');
 
-        //$result = $this->db->query('select * from items where id=1')->all();
-        $result = $this->dbMysql->query('select * from sample_two')->all();
+        $result = $this->db->query('select * from items where id=1')->all();
+        //$result = $this->dbMysql->query('select * from sample_two')->all();
         var_dump(
-            $this->dbMysql//RPDO::$STH
+            $result//RPDO::$STH
         );
         //RPDO::$DB
         if($id==null){
@@ -43,5 +42,16 @@ class Pages extends Model
         return true;
     }
 
+    public function select()
+    {
+        $db = self::setConnection('db','sqlite:'.Rec::$pathApp.'Database\documentation.sqlite');
+        //$db = self::getConnection('db');
+        $result = $db->query('select * from items')->all();
+
+        //$result = $this->db->query('select * from items')->all();
+        var_dump($result);
+
+        return '';
+    }
 
 } 

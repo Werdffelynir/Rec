@@ -44,7 +44,7 @@ class Rec
      * @param null $appPath
      * @param bool $debug
      */
-    public function __construct($appPath = null, $debug = true) {
+    public function __construct($appPath=null, $debug=true) {
         self::$debug = $debug;
         self::$urlPart = substr($_SERVER['PHP_SELF'], 0, -9);
         self::$urlDomain = $_SERVER['HTTP_HOST'];
@@ -54,7 +54,14 @@ class Rec
         self::$urlCurrent = self::$protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
         self::$path = substr($_SERVER['SCRIPT_FILENAME'], 0, -9);
         self::$pathApp = ($appPath == null) ? self::$path : self::$path . $appPath.'/';
-        $this->request = rtrim(str_replace(self::$urlPart, '', $_SERVER['REQUEST_URI']), '/');
+
+        //$this->request = rtrim(str_replace(self::$urlPart, '', $_SERVER['REQUEST_URI']), '/');
+        $this->request = rtrim($_SERVER['REQUEST_URI'], '/');
+
+        var_dump($_SERVER['REQUEST_URI']);
+        var_dump(self::$urlCurrent);
+        var_dump($this->request);
+
         $this->recPath = __DIR__;
     }
 
@@ -114,13 +121,15 @@ class Rec
         }
 
         $paramValues = array(' '=>'', '/'=>'\/*', '{n}'=>'(\d*)', '{w}'=>'([a-z_]*)', '{p}'=>'(\w*)',
-            '{!n}'=>'(\d+)', '{!w}'=>'([a-z_]+)', '{!p}'=>'(\w+)');
+            '{!n}'=>'(\d+)', '{!w}'=>'([a-zA-Z_]+)', '{!p}'=>'(\w+)','{*}'=>'(\w+\/*)');
 
         $this->recUrls[$url] = array(
             'class' => $this->checkClass($class),
             'param' => $param,
             'regexp' => '|^('.strtr($url,$paramValues).')\/*'.strtr($param,$paramValues).'$|',
         );
+        //var_dump($param);
+        //var_dump($this->recUrls);
     }
 
 
@@ -154,16 +163,26 @@ class Rec
      * Determine params to run application
      * @return string
      */
-    public function determineRunParams()
+    private function determineRunParams()
     {
-        $params = array();
-        $classMethods = explode('/', $this->recUrls['recUrlNotFound']);
+        $params = [];
 
-        if($this->request === '' || $this->request === '/')
-            $classMethods = explode('/',$this->recUrls['recUrlDefault']);
+        if(empty($this->recUrls['recUrlDefault']))
+            self::ExceptionError('Config option "recUrlDefault" UNDEFINED');
 
-        if($this->request == 'error404' || $this->request == '404')
-            $classMethods = explode('/',$this->recUrls['recUrlNotFound']);
+        $requestUrlDefault = explode('/',$this->recUrls['recUrlDefault']);
+
+        if(!isset($this->recUrls['recUrlNotFound']))
+            $requestUrlNotFound = [$requestUrlDefault[0],'error404'];
+        else
+            $requestUrlNotFound = explode('/',$this->recUrls['recUrlNotFound']);
+
+        if($this->request === '' || $this->request === '/'){
+            $classMethods = $requestUrlDefault;
+        }else if($this->request == 'error404' || $this->request == '404') {
+            $classMethods = $requestUrlNotFound;
+        } else
+            $classMethods = $requestUrlNotFound;
 
         foreach (array_keys($this->recUrls) as $kr)
         {
@@ -171,6 +190,7 @@ class Rec
 
             if (stripos($this->request, $kr) === 0) {
                 if(preg_match($this->recUrls[$kr]['regexp'], $this->request, $result)) {
+
                     $classMethods = explode('/',$this->recUrls[$kr]['class']);
                     if(count($result)>2) {
                         array_shift($result);
@@ -185,7 +205,7 @@ class Rec
 
         if(!file_exists($controllerPath)) {
             if(self::$debug)
-                self::ExceptionError('File not exists!',$controllerPath.'<br>  Call: '.$classMethods[0].'::'.$classMethods[1].'()<br>  Request URL: '.$this->request.' ', true);
+                self::ExceptionError('File not exists!',$controllerPath.'<br>  Call: '.$classMethods[0].'::'.$classMethods[1].'()<br>  Request URL: '.$this->request.' ');
 
             $classMethods[0] = 'Controller';
             $classMethods[1] = 'error404';
@@ -253,6 +273,80 @@ class Rec
             self::$connectionSettings[$key]=$value;
         }
     }
+
+
+    /**
+     * Метод возвращает параметры переданные через строку запроса.
+    основное предназначение это передача неких параметров, но все же
+    можно найти множество других применений для этого метода.
+     *
+     * <pre>
+     * Например: http://site.com/edit/page/id/215/article/sun-light
+     * /edit/page/                 - это контролер и екшен, они пропускаются
+        $this->urlArgs()            - id возвращает первый аргумент
+        $this->urlArgs(true)        - массив всех элементов "Array ( [1] => edit [2] => page [3] => id [4] => 215 [5]..."
+        $this->urlArgs(1)           - id аналогично, но '1' != 1
+        $this->urlArgs(3)           - возвращает третий аргумент article
+        $this->urlArgs('id')        - возвращает следующий после указного вернет 215
+        $this->urlArgs('article')   - sun-light
+        $this->urlArgs('getArray')  - массив всех элементов "Array ( [1] => edit [2] => page [3] => id [4] => 215 [5]..."
+        $this->urlArgs('getString') - строку всех элементов "edit/page/id/215/article/sun-light"
+        $this->urlArgs('getController') - строку всех элементов "edit/page/id/215/article/sun-light"
+        $this->urlArgs('getMethod') - строку всех элементов "edit/page/id/215/article/sun-light"
+        $this->urlArgs('edit', 3)   - 215 (3 шага от 'edit')
+     * </pre>
+     *
+     * @param bool $param
+     * @param int $element
+     * @return array|string
+     */
+    public static function urlArg($param=false, $element=1)
+    {
+        if(empty(self::$params)) return null;
+
+        // отдает первый елемент
+        if($param===false) {
+            return self::$params[0];
+
+        }elseif( $param===true ){
+            return self::$params;
+            // отдает по номеру елемент
+
+        }elseif( is_int($param) ){
+            $pNum = $param - 1;
+            return (isset(self::$params[$pNum])) ? self::$params[$pNum] : null;
+
+            //
+        }elseif($param == 'getArray'){
+            return self::$params;
+
+            //
+        }elseif($param == 'getString'){
+            return join('/',self::$action);
+            //
+        }elseif($param == 'currentController'){
+            return self::$controller;
+
+            //
+        }elseif($param == 'currentMethod'){
+            return self::$action;
+
+            // отдает елемент следующий после указаного
+        }else{
+            if(in_array($param, self::$params)){
+                if($element > 0){
+                    $keyElement = array_search($param, self::$params);
+                    $key = $keyElement+$element;
+                    return (isset(self::$params[$key]))?self::$params[$key]:null;
+                } else {
+                    return $param;
+                }
+            }else{
+                return null;
+            }
+        }
+    }
+
 
 
     public static function ExceptionError($errorMsg = 'File not exists', $fileName = null, $die = true)

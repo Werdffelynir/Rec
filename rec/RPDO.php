@@ -7,24 +7,18 @@ namespace rec;
 class RPDO
 {
     /** @var \PDO $DB */
-    public static $DB = null;
+    private static $DBH = null;
     /** @var \PDOStatement $STH */
-    public static $STH = null;
+    private static $STH = null;
 
-    /** @var RPDO $db */
-    //public $db = null;
-
-    public $sql = null;
-    public $connectionName = null;
-    public $tableName = null;
-    public $dbname = null;
-    public $config = null;
-    public $name = null;
-    public $password = null;
+    private $sql = null;
+    private $config = null;
+    private $name = null;
+    private $password = null;
 
 
 
-    public function __construct($config,$name,$password)
+    public function __construct($config, $name, $password)
     {
         try {
             $this->init($config,$name,$password);
@@ -43,19 +37,27 @@ class RPDO
      */
     private function init($config,$name,$password)
     {
-        self::$DB = new \PDO($config,$name,$password);
+        self::$DBH = new \PDO($config,$name,$password);
         $this->config = $config;
         $this->name = $name;
         $this->password = $password;
     }
 
 
-    /*public function __get($name)
+    public function __get($name)
     {
-        if($name=='db')
-            return self::$DB;
+        $name = strtolower($name);
 
-    }*/
+        if($name=='dbh' || $name=='connect' || $name=='rpdo')
+        {
+            return self::$DBH;
+        }
+        else if($name=='sql')
+        {
+            return $this->sql;
+        }
+
+    }
 
 
     /**
@@ -71,7 +73,7 @@ class RPDO
         $count = null;
 
         try {
-            $count = self::$DB->exec($sql);
+            $count = self::$DBH->exec($sql);
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
@@ -120,12 +122,12 @@ class RPDO
         $this->sql = $sql;
 
         if (is_null($data)) {
-            self::$STH = self::$DB->prepare($sql);
+            self::$STH = self::$DBH->prepare($sql);
             if(!self::$STH)
                 $this->checkConnect(true);
             self::$STH->execute();
         } else {
-            self::$STH = self::$DB->prepare($sql);
+            self::$STH = self::$DBH->prepare($sql);
             if(!self::$STH)
                 $this->checkConnect(true);
             self::$STH->execute($data);
@@ -203,7 +205,7 @@ class RPDO
             $constructSql .= ")";
 
             $this->sql = $constructSql;
-            self::$STH = self::$DB->prepare($constructSql);
+            self::$STH = self::$DBH->prepare($constructSql);
             $resultInsert = self::$STH->execute($dataValue);
             return $resultInsert;
         } else {
@@ -213,7 +215,7 @@ class RPDO
 
 
     /**
-     * Метод обертка UPDATE
+     * Обертка UPDATE
      *
      * <pre>
      * ->update( 'table', array('column'),array('data'), 'id=50' || array('id=:id', array('id'=>50)) );
@@ -278,7 +280,7 @@ class RPDO
 
             $this->sql = $constructSql;
 
-            self::$STH = self::$DB->prepare($constructSql);
+            self::$STH = self::$DBH->prepare($constructSql);
             $resultUpdate = self::$STH->execute($dataValue);
 
             return $resultUpdate;
@@ -289,13 +291,13 @@ class RPDO
 
 
     /**
-     * Обертка удаления
+     * Обертка DELETE
      *
      * <pre>
      * Например:
-     * ->delete( 'table', 'key=val' || array('key=:key', array('key'=>val));
+     * ->delete('table','key=val' || ['key=:key',['key'=>val]];
      * ->delete('Users','id=21');
-     * ->delete('Users', array('id=:id', array('id'=>'21'));
+     * ->delete('Users', ['id=:id', ['id'=>'21']]);
      * </pre>
      *
      * @param string $table    название таблицы
@@ -317,7 +319,7 @@ class RPDO
 
         $this->sql = $constructSql;
 
-        self::$STH = self::$DB->prepare($constructSql);
+        self::$STH = self::$DBH->prepare($constructSql);
         $resultUpdate = self::$STH->execute($dataValue);
 
         return $resultUpdate;
@@ -327,10 +329,12 @@ class RPDO
 
     private function checkConnect($checkSTH=false)
     {
-        if (self::$DB == null) die("Connection with DataBase closed!");
+        if (self::$DBH == null)
+            die("Connection with DataBase closed!");
 
         if($checkSTH)
-            if (self::$STH == null)  die('Error SQL string! Check your query string, error can be names :<br><span style="color:red">'.$this->sql.'</span>');
+            if (self::$STH == null)
+                die('Error SQL string! Check your query string, error can be names :<br><code style="color:red"><pre>'.$this->sql.'</pre></code>');
     }
 
 
@@ -542,7 +546,7 @@ class RPDO
      *
      * @param string    $tbl    таблица
      * @param string    $primaryKey     имя столбца для подсчета
-     * @return numeric
+     * @return number
      */
     public function lastId($tbl, $primaryKey ='id')
     {
@@ -562,8 +566,13 @@ class RPDO
      */
     public function close()
     {
-        self::$DB = null;
-        unset(self::$DB);
+        self::$STH = null;
+        self::$DBH = null;
+        $this->sql = null;
+        $this->config = null;
+        $this->name = null;
+        $this->password = null;
+        unset(self::$DBH);
     }
 
 
@@ -572,9 +581,7 @@ class RPDO
      */
     public function reset()
     {
-        self::$STH = null;
-        self::$DB = null;
-
+        $this->close();
         try {
             $this->init($this->config,$this->name,$this->password);
         } catch (\PDOException $e) {
