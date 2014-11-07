@@ -35,6 +35,7 @@ class Rec
     public static $controller = null;
     public static $action = null;
     public static $params = null;
+    public static $args = null;
 
     private $recPath = null;
     private $recUrls = array();
@@ -44,24 +45,20 @@ class Rec
      * @param null $appPath
      * @param bool $debug
      */
-    public function __construct($appPath=null, $debug=true) {
+    public function __construct($appPath=null, $debug=true)
+    {
         self::$debug = $debug;
-        self::$urlPart = substr($_SERVER['PHP_SELF'], 0, -9);
+
         self::$urlDomain = $_SERVER['HTTP_HOST'];
-        self::$urlFull = self::$urlDomain . self::$urlPart;
-        self::$url = self::$urlPart;
+        self::$urlPart = substr($_SERVER['PHP_SELF'], 0, -9);
         self::$protocol = ($_SERVER['REQUEST_URI']=='on')?'https':'http';
+        self::$url = self::$urlPart;
+        self::$urlFull = self::$protocol.'://'.self::$urlDomain . self::$urlPart;
         self::$urlCurrent = self::$protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
         self::$path = substr($_SERVER['SCRIPT_FILENAME'], 0, -9);
         self::$pathApp = ($appPath == null) ? self::$path : self::$path . $appPath.'/';
 
-        //$this->request = rtrim(str_replace(self::$urlPart, '', $_SERVER['REQUEST_URI']), '/');
-        $this->request = rtrim($_SERVER['REQUEST_URI'], '/');
-
-        var_dump($_SERVER['REQUEST_URI']);
-        var_dump(self::$urlCurrent);
-        var_dump($this->request);
-
+        $this->request = str_replace( trim(self::$urlPart,'/'), '',  trim($_SERVER['REQUEST_URI'],'/'));
         $this->recPath = __DIR__;
     }
 
@@ -114,6 +111,9 @@ class Rec
     public function urlAdd($class, $url)
     {
         $param = null;
+        $regexp = null;
+        $args = null;
+
         if ($paramPos = strpos($url, '{')) {
             $_url = $url;
             $url = substr($url, 0, $paramPos - 1);
@@ -121,17 +121,28 @@ class Rec
         }
 
         $paramValues = array(' '=>'', '/'=>'\/*', '{n}'=>'(\d*)', '{w}'=>'([a-z_]*)', '{p}'=>'(\w*)',
-            '{!n}'=>'(\d+)', '{!w}'=>'([a-zA-Z_]+)', '{!p}'=>'(\w+)','{*}'=>'(\w+\/*)');
+            '{!n}'=>'(\d+)', '{!w}'=>'([a-zA-Z_]+)', '{!p}'=>'(\w+)','{*}'=>'([\w\/-]*)');
+
+        if(strpos($param,':') !==false)
+        {
+            preg_match_all('|\:(\w+)|', $param, $result);
+            if(!empty($result[0])) {
+                foreach ($result[0] as $_result)
+                    $param = str_ireplace($_result, '', $param);
+                foreach ($result[1] as $_result)
+                    $args[] = $_result;
+            }
+        }
+
+        $regexp = '|^('.strtr($url,$paramValues).')\/*'.strtr($param,$paramValues).'$|';
 
         $this->recUrls[$url] = array(
             'class' => $this->checkClass($class),
             'param' => $param,
-            'regexp' => '|^('.strtr($url,$paramValues).')\/*'.strtr($param,$paramValues).'$|',
+            'regexp' => $regexp,
+            'args' => $args,
         );
-        //var_dump($param);
-        //var_dump($this->recUrls);
     }
-
 
     /**
      * autoloaded classes from source and application
@@ -165,6 +176,7 @@ class Rec
      */
     private function determineRunParams()
     {
+        $args = [];
         $params = [];
 
         if(empty($this->recUrls['recUrlDefault']))
@@ -188,16 +200,24 @@ class Rec
         {
             if($kr=='recUrlDefault' || $kr=='recUrlNotFound') continue;
 
-            if (stripos($this->request, $kr) === 0) {
-                if(preg_match($this->recUrls[$kr]['regexp'], $this->request, $result)) {
-
+            $_request = $this->request;
+            if($_part = strpos($this->request,'/')) $_request = substr($this->request,0, $_part);
+            if ($_request==$kr)
+            {
+                if(preg_match($this->recUrls[$kr]['regexp'], $this->request, $result))
+                {
                     $classMethods = explode('/',$this->recUrls[$kr]['class']);
-                    if(count($result)>2) {
+                    if(count($result) > 2)
+                    {
                         array_shift($result);
                         array_shift($result);
                         $params = (isset($result)) ? $result : array();
+                        $args = null;
                     }
                 }
+
+                if(!empty($this->recUrls[$kr]['args']) && !empty($params))
+                    $args = array_combine($this->recUrls[$kr]['args'], $params);
             }
         }
 
@@ -214,7 +234,8 @@ class Rec
 
         self::$controller = $classMethods[0];
         self::$action = $classMethods[1];
-        self::$params = $params;
+        self::$params = (!empty($params[0])) ? explode('/',$params[0]) : [];
+        self::$args = $args;
 
         return $controllerPath;
     }
@@ -233,6 +254,25 @@ class Rec
             $controllerObj = new $classControllerName;
             $controllerObj->init();
 
+            /** @var array $controllerActions обработка динамических запросов */
+            if($controllerActions = $controllerObj->actions()){
+                foreach ($controllerActions as $casKey=>$casVal) {
+                    if(in_array($casKey, self::$params))
+                    {
+                        if(substr($casVal,0,2) == '//') {
+                            $actionFile = Rec::$pathApp . substr($casVal, 2).'.php';
+                            var_dump($actionFile);
+                            if (file_exists($actionFile)) {
+                                require_once $actionFile;
+                                exit;
+                            }
+                        } else {
+                            self::$action = $casVal;
+                        }
+                    }
+                }
+            }
+
             if (method_exists($controllerObj, self::$action))
             {
                 if(self::$action=='error404')
@@ -247,14 +287,16 @@ class Rec
 
                 } else {
 
+                    /** @var array $returnedArgs */
                     $controllerObj->beforeAction();
-                    call_user_func_array(array((object)$controllerObj, self::$action), self::$params );
+                    $returnedArgs = (!empty(self::$args)) ? self::$args : self::$params;
+                    call_user_func_array(array((object)$controllerObj, self::$action), $returnedArgs );
                     $controllerObj->afterAction();
                     exit;
                 }
 
             } else {
-                \rec\Request::redirect(self::$url.'/error404',false,'404');
+                Request::redirect(self::$url.'/error404',false,'404');
             }
 
         } else {
@@ -304,14 +346,14 @@ class Rec
     {
         if(empty(self::$params)) return null;
 
-        // отдает первый елемент
+        # отдает первый елемент
         if($param===false) {
             return self::$params[0];
 
         }elseif( $param===true ){
             return self::$params;
-            // отдает по номеру елемент
 
+        # отдает по номеру елемент
         }elseif( is_int($param) ){
             $pNum = $param - 1;
             return (isset(self::$params[$pNum])) ? self::$params[$pNum] : null;
@@ -322,7 +364,7 @@ class Rec
 
             //
         }elseif($param == 'getString'){
-            return join('/',self::$action);
+            return join('/',self::$params);
             //
         }elseif($param == 'currentController'){
             return self::$controller;

@@ -11,6 +11,15 @@ class Main extends Base
 
     public function afterAction(){}
 
+    public function actions()
+    {
+        return [
+            'one'=>'//Components/actions/one',
+            'two'=>'//Components/actions/two',
+            'inside'=>'inside'
+        ];
+    }
+
     public function index()
     {
         $this->render('index', [
@@ -27,9 +36,25 @@ class Main extends Base
 
     public function page()
     {
-        var_dump($this->urlArg());
-        //$m = Pages::model()->select();
-        //$this->render('home',['text'=>'Home Page']);
+        $this->render('index', [
+            'title'=> $this->applicationName,
+            'content'=>'<img src="'.\rec\Rec::$url.'public/images/img.jpg" alt=""/>'
+        ]);
     }
 
+    public function inside()
+    {
+        var_dump('inside');
+    }
+
+    public function ajax($on)
+    {
+        if($this->isAjax()) {
+            echo 'IsAjax: '.$on;
+            print_r($_POST);
+        }else{
+            echo 'Is NOT Ajax';
+            echo $on;
+        }
+    }
 } 

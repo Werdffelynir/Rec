@@ -31,6 +31,9 @@ class Controller {
     public function init(){}
     public function beforeAction(){}
     public function afterAction(){}
+    public function actions(){
+        return [];
+    }
 
     public function error404()
     {
@@ -60,7 +63,7 @@ class Controller {
                     <a href='".$linkBeck."'>Go back </a><br>
                     <a href='http://google.com'>Go go Google </a><br><br></p>
                 <h3>Url:</h3>
-                <code><a href='".Rec::$urlCurrent."'>".Rec::$urlCurrent."r</a></code><hr/>
+                <code><a href='".Rec::$urlCurrent."'>".Rec::$urlCurrent."</a></code><hr/>
             </div></body></html>";
         exit;
     }
@@ -153,6 +156,10 @@ class Controller {
     public function urlArg($param=false, $element=1)
     {
         return Rec::urlArg($param, $element);
+    }
+    public function isAjax()
+    {
+        return Request::isAjax();
     }
 
 } 
