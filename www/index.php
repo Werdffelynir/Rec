@@ -24,9 +24,11 @@ $R->setApplicationName('Web Application');
  */
 $R->urlDefault('Main');
 $R->urlNotFound('Main/error404');
-$R->urlAdd('Main/ajax', 'ajax/{!w:on}');
-$R->urlAdd('Main/home', 'home');
-$R->urlAdd('Main/page', 'page/{*}');
+//$R->urlAdd('Main/ajax', 'ajax/{!w:on}');
+//$R->urlAdd('Main/home', 'home');
+$R->urlAdd('Main/docs', 'docs');
+$R->urlAdd('Main/doc', 'doc/{!n}');
+
 
 
 /**
@@ -37,11 +39,11 @@ $R->connection(
         'db' => [
             'dbh' => 'sqlite:../www/app/Database/documentation.sqlite',
         ],
-        'dbMysql' => [
+        /*'dbMysql' => [
             'dbh' => 'mysql:host=localhost;dbname=test',
             'user' => 'root',
             'pass' => ''
-        ],
+        ],*/
     ]
 );
 

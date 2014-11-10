@@ -13,4 +13,6 @@ class Base extends Controller
         $this->title = Rec::$applicationName;
     }
 
+
+
 }

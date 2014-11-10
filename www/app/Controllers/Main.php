@@ -3,6 +3,7 @@
 namespace app\Controllers;
 
 use \app\Base;
+use app\Models\Items;
 use \app\Models\Pages;
 
 class Main extends Base
@@ -28,33 +29,20 @@ class Main extends Base
         ]);
     }
 
-    public function home()
+    public function docs()
     {
-        //$m = Pages::model()->select();
-        $this->render('home',['text'=>'Home Page']);
+        $mItems = new Items();
+        $list = $mItems->itemsList();
+
+        $this->render('docs',['list'=>$list]);
     }
 
-    public function page()
+    public function doc($id)
     {
-        $this->render('index', [
-            'title'=> $this->applicationName,
-            'content'=>'<img src="'.\rec\Rec::$url.'public/images/img.jpg" alt=""/>'
-        ]);
+        $mItems = new Items();
+        $document = $mItems->db->getById($mItems->table, $id);
+
+        $this->render('doc',['document'=>$document]);
     }
 
-    public function inside()
-    {
-        var_dump('inside');
-    }
-
-    public function ajax($on)
-    {
-        if($this->isAjax()) {
-            echo 'IsAjax: '.$on;
-            print_r($_POST);
-        }else{
-            echo 'Is NOT Ajax';
-            echo $on;
-        }
-    }
 } 
