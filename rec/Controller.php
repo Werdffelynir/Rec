@@ -98,7 +98,9 @@ class Controller {
      */
     public function render($partial='//out', array $data = array())
     {
-        $this->outPosition[$this->outPositionDefault] = $this->renderPartial($partial, $data, true);
+        if($partial!==false)
+            $this->outPosition[$this->outPositionDefault] = $this->renderPartial($partial, $data, true);
+
         $this->renderLayout();
     }
 
