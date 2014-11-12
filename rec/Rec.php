@@ -429,4 +429,23 @@ class Rec
 
     }
 
+    /**
+     * simple include file
+     * @param string $fileName 'path/file' or '//path/file' of root app
+     */
+    public static function inc($fileName, $ext='php')
+    {
+        if(substr($fileName,0,2) == '//')
+            $file = substr($fileName,2);
+        else
+            $file = 'Views/'.$fileName;
+
+        $pathFile = self::$pathApp.$file.'.'.$ext;
+        if(file_exists($pathFile))
+            include $pathFile;
+        else
+            if(self::$debug)
+                self::ExceptionError('File not exists', $pathFile);
+    }
+
 }
