@@ -13,15 +13,16 @@ class RPDO
 
     private $sql = null;
     private $config = null;
-    private $name = null;
+    private $user = null;
     private $password = null;
 
+    public $table;
+    public $primaryKey;
 
-
-    public function __construct($config, $name, $password)
+    public function __construct($config, $user, $password, $table, $primaryKey)
     {
         try {
-            $this->init($config,$name,$password);
+            $this->init($config,$user,$password,$table,$primaryKey);
         } catch (\PDOException $e) {
             echo 'Подключение не удалось: ' . $e->getMessage();
         }
@@ -32,15 +33,20 @@ class RPDO
      * Инициализация PDO
      *
      * @param string    $config
-     * @param string    $name
+     * @param string    $user
      * @param string    $password
+     * @param string    $table
+     * @param string    $primaryKey
      */
-    private function init($config,$name,$password)
+    private function init($config,$user,$password,$table,$primaryKey)
     {
-        self::$DBH = new \PDO($config,$name,$password);
+        self::$DBH = new \PDO($config,$user,$password);
         $this->config = $config;
-        $this->name = $name;
+        $this->user = $user;
         $this->password = $password;
+        $this->table = $table;
+        $this->primaryKey = $primaryKey;
+
     }
 
 
@@ -176,7 +182,8 @@ class RPDO
     /**
      * Обертка INSERT
      * <pre>
-     * ->insert("pages", array("title","link","content","datetime","author"),
+     * ->insert(
+     *      array("title","link","content","datetime","author"),
      *      array(
      *          'title'     =>'SOME TITLE',
      *          'link'      =>'SOME LINK',
@@ -185,18 +192,19 @@ class RPDO
      *          'author'    =>'SOME AUTHOR',
      *      ));
      * С генерирует SQL запрос:
-     * "INSERT INTO pages (title,link,content,datetime,author)
+     * "INSERT INTO table (title,link,content,datetime,author)
      *      VALUES (:title,:link,:content,:datetime,:author)"
      * и подставит необходимые значения.
      * </pre>
      *
-     * @param $table - Имя таблицы
      * @param array $dataColumn - Масив названий колонок для обновлеия
      * @param array $dataValue - Массив значений для установленных $dataColumn
      * @return bool
      */
-    public function insert($table, array $dataColumn, array $dataValue)
+    public function insert(array $dataColumn, array $dataValue)
     {
+        $table = $this->table;
+
         if (count($dataColumn) == count($dataValue)) {
             $constructSql = "INSERT INTO " . $table . " (";
             $constructSql .= implode(", ", $dataColumn);
@@ -218,10 +226,9 @@ class RPDO
      * Обертка UPDATE
      *
      * <pre>
-     * ->update( 'table', array('column'),array('data'), 'id=50' || array('id=:id', array('id'=>50)) );
+     * ->update( array('column'),array('data'), 'id=50' || array('id=:id', array('id'=>50)) );
      *
      * ->update(
-     *      "pages",
      *      array("type","link","category","title","content","datetime","author"),
      *      array(
      *          'type'     =>'SOME DATA TITLE',
@@ -236,7 +243,6 @@ class RPDO
      *  );
      *
      * ->update(
-     *      "pages",
      *      array("type","link","category","title","content","datetime","author"),
      *      array(
      *          'type'     =>'SOME DATA TITLE',
@@ -252,14 +258,15 @@ class RPDO
      * Сгенерирует: "UPDATE pages SET title=:title, type=:type, link=:link, category=:category, subcategory=:subcategory, content=:content, datetime=:datetime WHERE id=:updId AND title=:updTitle;"
      * </pre>
      *
-     * @param $table - Имя таблицы
      * @param array $dataColumn - Масив названий колонок для обновлеия
      * @param array $dataValue - Массив значений для установленных $dataColumn
      * @param $where - определение, строка НЕ безопасно "id=$id", или безопасный вариант array( "id=:updId", array('updId'=>$id))
      * @return bool
      */
-    public function update($table, array $dataColumn, array $dataValue, $where = null)
+    public function update(array $dataColumn, array $dataValue, $where = null)
     {
+        $table = $this->table;
+
         if (count($dataColumn) == count($dataValue)) {
             $constructSql = "UPDATE " . $table . " SET ";
 
@@ -295,19 +302,18 @@ class RPDO
      *
      * <pre>
      * Например:
-     * ->delete('table','key=val' || ['key=:key',['key'=>val]];
-     * ->delete('Users','id=21');
-     * ->delete('Users', ['id=:id', ['id'=>'21']]);
+     * ->delete('key=val' || ['key=:key',['key'=>val]];
+     * ->delete('id=21');
+     * ->delete( ['id=:id', ['id'=>'21']]);
      * </pre>
      *
-     * @param string $table    название таблицы
      * @param string $where    Часть запроса SQL where
      * @return mixed
      */
-    public function delete($table,  $where = null)
+    public function delete($where = null)
     {
+        $table = $this->table;
         $dataValue = null;
-
         $constructSql = "DELETE FROM " . $table;
 
         if (is_string($where)) {
@@ -345,11 +351,11 @@ class RPDO
      * <pre>
      * Например:
      *
-     * ->getAll("table");
+     * ->getAll();
      *
-     * ->getAll("table", "title, content, author");
+     * ->getAll("title, content, author");
      *
-     * ->getAll("table", array(
+     * ->getAll(array(
      *      "title",
      *      "content",
      *      "author"
@@ -357,23 +363,23 @@ class RPDO
      *
      * </pre>
      *
-     * @param string            $tbl    название таблицы
      * @param null|string|array $select если string через запятую, выберает указаные поля,
      *                                  если array по значених выберает указаные
      * @param string            $where  Часть запроса SQL where
      * @param string            $order  Часть запроса SQL order
      * @return mixed
      */
-    public function getAll($tbl, $select = null, $where = '', $order='')
+    public function getAll($select = null, $where = '', $order='')
     {
+        $table = $this->table;
         $sql = '';
         if ($select == null) {
-            $sql = "SELECT * FROM " . $tbl;
+            $sql = "SELECT * FROM " . $table;
         } elseif (is_string($select)) {
-            $sql = "SELECT " . $select . " FROM " . $tbl;
+            $sql = "SELECT " . $select . " FROM " . $table;
         } elseif (is_array($select)) {
             $column = implode(", ", $select);
-            $sql = "SELECT " . $column . " FROM " . $tbl;
+            $sql = "SELECT " . $column . " FROM " . $table;
         }
         $sql .= (!empty($where)) ? ' WHERE ' . $where : '';
         $sql .= (!empty($order)) ? ' ORDER BY ' . $order : '';
@@ -389,34 +395,34 @@ class RPDO
      * <pre>
      * Например:
      *
-     * ->getById("table", 215);
+     * ->getById(215);
      *
-     * ->getById("table", 215, "title, content, author");
+     * ->getById(215, "title, content, author");
      *
-     * ->getById("table", 215, array(
+     * ->getById(215, array(
      *      "title",
      *      "content",
      *      "author"
      * ));
      *
      * </pre>
-     * @param $tbl      название таблицы
-     * @param $id       id записи
-     * @param $select (string|array) если string через запятую, выберает указаные,
-     *                               если array по значених выберает указаные
+     * @param number        $id       id записи
+     * @param string|array  $select     если string через запятую, выберает указаные,
+     *                                  если array по значених выберает указаные
      * @return mixed
      */
-    public function getById($tbl, $id, $select = null)
+    public function getById($id, $select = null)
     {
+        $table = $this->table;
         $sql = '';
 
         if ($select == null) {
-            $sql = "SELECT * FROM " . $tbl . " WHERE id='" . $id . "'";
+            $sql = "SELECT * FROM " . $table . " WHERE id='" . $id . "'";
         } elseif (is_string($select)) {
-            $sql = "SELECT " . $select . " FROM " . $tbl . " WHERE id='" . $id . "'";
+            $sql = "SELECT " . $select . " FROM " . $table . " WHERE id='" . $id . "'";
         } elseif (is_array($select)) {
             $column = implode(", ", $select);
-            $sql = "SELECT " . $column . " FROM " . $tbl . " WHERE id='" . $id . "'";
+            $sql = "SELECT " . $column . " FROM " . $table . " WHERE id='" . $id . "'";
         }
 
         $this->sql = $sql;
@@ -431,39 +437,39 @@ class RPDO
      * <pre>
      * Например:
      *
-     * ->getByAttr("table", "column", "column_value");
+     * ->getByAttr("column", "column_value");
      *
-     * ->getByAttr("table", "column", "column_value", "title, content, author");
+     * ->getByAttr("column", "column_value", "title, content, author");
      *
-     * ->getByAttr("table", "column", "column_value", array(
+     * ->getByAttr("column", "column_value", array(
      *      "title",
      *      "content",
      *      "author"
      * ));
      *
-     * ->getByAttr("table", "column", "column_value", null, "AND link='my_link'");
+     * ->getByAttr("column", "column_value", null, "AND link='my_link'");
      *
      * </pre>
      *
-     * @param string            $tbl        название таблицы
      * @param string            $attr       название колонки
      * @param string            $attrVal    значение в колонке
      * @param string|array      $select     если string через запятую, выберает указаные, если array по значених выберает указаные
      * @param string            $andWhere   AND WHERE
      * @return array
      */
-    public function getByAttr($tbl, $attr, $attrVal, $select = null, $andWhere=null)
+    public function getByAttr($attr, $attrVal, $select = null, $andWhere=null)
     {
+        $table = $this->table;
         $setWhere = ($andWhere!=null) ? $andWhere : '';
 
         $sql = '';
         if ($select == null) {
-            $sql = "SELECT * FROM " . $tbl . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
+            $sql = "SELECT * FROM " . $table . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
         } elseif (is_string($select)) {
-            $sql = "SELECT " . $select . " FROM " . $tbl . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere."";
+            $sql = "SELECT " . $select . " FROM " . $table . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere."";
         } elseif (is_array($select)) {
             $column = implode(", ", $select);
-            $sql = "SELECT " . $column . " FROM " . $tbl . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere."";
+            $sql = "SELECT " . $column . " FROM " . $table . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere."";
         }
 
         $this->sql = $sql;
@@ -478,18 +484,17 @@ class RPDO
      * <pre>
      * Например:
      *
-     * ->getAllByAttr("table", "column", "column_value");
+     * ->getAllByAttr("column", "column_value");
      *
-     * ->getAllByAttr("table", "column", "column_value", "title, content, author");
+     * ->getAllByAttr("column", "column_value", "title, content, author");
      *
-     * ->getAllByAttr("table", "column", "column_value", array(
+     * ->getAllByAttr("column", "column_value", array(
      *      "title",
      *      "content",
      *      "author"
      * ));
      *
      * </pre>
-     * @param string        $tbl        Таблица
      * @param string        $attr       По атрибуту, колонке
      * @param string        $attrVal    Значение $attr по которому делается поиск
      * @param string        $andWhere
@@ -498,18 +503,19 @@ class RPDO
      *                                      если array по значених выберает указаные
      * @return mixed
      */
-    public function getAllByAttr($tbl, $attr, $attrVal, $select=null, $andWhere=null)
+    public function getAllByAttr($attr, $attrVal, $select=null, $andWhere=null)
     {
+        $table = $this->table;
         $setWhere = ($andWhere!=null) ? $andWhere : '';
 
         $sql = '';
         if ($select == null) {
-            $sql = "SELECT * FROM " . $tbl . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
+            $sql = "SELECT * FROM " . $table . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
         } elseif (is_string($select)) {
-            $sql = "SELECT " . $select . " FROM " . $tbl . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
+            $sql = "SELECT " . $select . " FROM " . $table . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
         } elseif (is_array($select)) {
             $column = implode(",", $select);
-            $sql = "SELECT " . $column . " FROM " . $tbl . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
+            $sql = "SELECT " . $column . " FROM " . $table . " WHERE " . $attr . "='" . $attrVal . "' ".$setWhere." ";
         }
 
         $this->sql = $sql;
@@ -521,16 +527,16 @@ class RPDO
     /**
      * Подсчет количества записй в таблице
      *
-     * @param string    $tbl     таблица
      * @param string    $where
-     * @return bool|numeric
+     * @return bool|number
      */
-    public function countRows($tbl, $where=null)
+    public function countRows($where=null)
     {
+        $table = $this->table;
         if($where!=null)
             $where = 'WHERE '.$where;
 
-        $this->sql = "SELECT COUNT(*) as counter FROM $tbl ".$where;
+        $this->sql = "SELECT COUNT(*) as counter FROM $table ".$where;
 
         $result = $this->query($this->sql)->all();
 
@@ -544,14 +550,13 @@ class RPDO
     /**
      * Определение последнего ID в таблице
      *
-     * @param string    $tbl    таблица
      * @param string    $primaryKey     имя столбца для подсчета
      * @return number
      */
-    public function lastId($tbl, $primaryKey ='id')
+    public function lastId($primaryKey ='id')
     {
-
-        $this->sql = "SELECT $primaryKey FROM $tbl ORDER BY $primaryKey DESC ";
+        $table = $this->table;
+        $this->sql = "SELECT $primaryKey FROM $table ORDER BY $primaryKey DESC ";
 
         $result = $this->query($this->sql)->all();
         if(isset($result[0][$primaryKey]))
@@ -570,7 +575,7 @@ class RPDO
         self::$DBH = null;
         $this->sql = null;
         $this->config = null;
-        $this->name = null;
+        $this->user = null;
         $this->password = null;
         unset(self::$DBH);
     }
@@ -583,7 +588,7 @@ class RPDO
     {
         $this->close();
         try {
-            $this->init($this->config,$this->name,$this->password);
+            $this->init($this->config,$this->user,$this->password,$this->table,$this->primaryKey);
         } catch (\PDOException $e) {
             echo 'Подключение не удалось: ' . $e->getMessage();
         }

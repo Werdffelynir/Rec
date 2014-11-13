@@ -11,6 +11,11 @@ class Model
     /** @var array  */
     private static $connectionStaticStack = [];
 
+    /** @var string $table */
+    public $table = null;
+    /** @var string $primaryKey */
+    public $primaryKey = 'id';
+
     public function __construct()
     {
         $this->init();
@@ -34,8 +39,10 @@ class Model
             $user = (isset($connection['user']))?$connection['user']:'';
             $pass = (isset($connection['pass']))?$connection['pass']:'';
 
+            $this->calledTable();
+
             /** @var RPDO $rPDO */
-            $rPDO = new RPDO($dbh, $user, $pass);
+            $rPDO = new RPDO($dbh, $user, $pass, $this->table, $this->primaryKey);
 
             self::$connectionStaticStack[$called] = [
                 'dbh'=>$dbh,
@@ -48,6 +55,15 @@ class Model
 
         } else {
             return null;
+        }
+    }
+
+    private function calledTable()
+    {
+        if(!$this->table){
+            $called = str_replace('\\', '\/', get_called_class() ) ;
+            $table = strtolower(substr($called, strrpos($called, '/')+1));
+            $this->table = $table;
         }
     }
 

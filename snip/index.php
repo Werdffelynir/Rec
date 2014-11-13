@@ -10,6 +10,17 @@ $R = new rec\Rec('app', DEBUG);
 $R->setApplicationName('Snippets Notes');
 
 /**
+ * Create connection with database
+ */
+$R->connection(
+    [
+        'db' => [
+            'dbh' => 'sqlite:../snip/app/Database/snippets.sqlite',
+        ]
+    ]
+);
+
+/**
  * Alias to controllers and roles
  *      urlAdd(' Class/Method ', ' url/{!p}/{n} ')
  *

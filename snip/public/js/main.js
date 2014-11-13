@@ -1,26 +1,27 @@
 /* BASE URL */
-function url(type){
+function url(type) {
     var url = null;
-    if(type == 'base'){
+    if (type == 'base') {
         url = $('meta[data-url]').attr('data-url');
-    }else if(type == 'theme'){
+    } else if (type == 'theme') {
         url = $('meta[data-url]').attr('data-url-theme');
     }
     return url;
 }
 
 
-/** WORK WITH COOKIES **/
-function cookieSet(index) {
-    $.cookie('submenuMark-' + index, 'opened', {expires: null, path: '/'}); // Set mark to cookie (submenu is shown):
-}
-function cookieDel(index) {
-    $.cookie('submenuMark-' + index, null, {expires: null, path: '/'}); // Delete mark from cookie (submenu is hidden):
-}
-
 
 $(document).ready(function () {
-    /* MENU SNIPPETS */
+
+    /* SUBCATEGORY MENU SNIPPETS
+    function cookieSet(index) {
+        $.cookie('submenuMark-' + index, 'opened', {expires: null, path: '/'}); // Set mark to cookie (submenu is shown):
+    }
+
+    function cookieDel(index) {
+        $.cookie('submenuMark-' + index, null, {expires: null, path: '/'}); // Delete mark from cookie (submenu is hidden):
+    }
+
     $('ul#left_ul ul').each(function (i) { // Check each submenu:
         if ($.cookie('submenuMark-' + i)) {  // If index of submenu is marked in cookies:
             $(this).show().prev().removeClass('collapsed').addClass('expanded'); // Show it (add apropriate classes)
@@ -46,4 +47,12 @@ $(document).ready(function () {
             return false; // Prohibit the browser to follow the link address
         });
     });
+     */
+
+    $('.on_btn_login').click(function(eve){
+        $('.login_box').fadeToggle(150);
+    });
+
+
+
 });

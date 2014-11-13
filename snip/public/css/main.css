@@ -80,13 +80,13 @@ hr{
     font-size: 12px;
     box-shadow: 0 0 6px #111111;
 }
-input[type=text], input[type=password]{
+input[type=text], input[type=password], select, textarea{
     border: 1px solid #797979;
     background-color: #111111;
     color: #FFF;
     padding: 0 5px;
 }
-input[type=text], input[type=password]:focus{
+input[type=text], input[type=password]:focus, select:focus, textarea:focus{
     outline: none;
 }
 
@@ -187,6 +187,7 @@ input[name=search]:focus{
     line-height: 22px;
 }
 .login_box{
+    display: none;
     position: absolute;
     width: 160px;
     margin-left: 66px;
@@ -194,9 +195,12 @@ input[name=search]:focus{
     box-shadow: 2px 2px 6px 3px rgba(0,0,0,0.4);
 }
 .login_box input{
+
     width: 100%;
     margin-bottom: 3px;
 }
+
+
 
 /** Category Menu */
 .cat_menu ul{
@@ -249,6 +253,44 @@ input[name=search]:focus{
     text-align: center;
     text-shadow: 1px -1px rgba(0,0,0,0.8);
     font-size: 8px;
+}
+
+
+
+/* -----------------------------------------------------------------------------
+CONTENT
+----------------------------------------------------------------------------- */
+
+.content_left{
+
+}
+.content_left .box_menu{
+    text-align: right;
+    margin-bottom: 3px;
+}
+
+.content_item{
+    padding: 3px;
+    margin: 0px 0px 5px;
+}
+.content_item hr{
+    padding: 0; margin: 2px 0;
+    height: 1px;
+ }
+.content_item p{
+    text-indent: 0;
+    padding: 0; margin: 0;
+    line-height: 20px;
+}
+.tags{
+    margin-left: 10px;
+}
+.tags a{
+    color: #989bff;
+    text-decoration: none;
+}
+.tags a:hover{
+    color: #cccdff
 }
 
 /* -----------------------------------------------------------------------------
@@ -315,11 +357,23 @@ ul#left_ul a.expanded {
     background: url('../images/expanded.png') left 3px no-repeat;
 }
 
+/*EDIT*/
+.edit{
 
+}
 
-
-
-
+.edit input, .edit select, .edit textarea{
+    margin-bottom: 3px;
+    width: 100%;
+}
+.edit textarea{
+    min-height: 600px;
+}
+.edit p{
+    padding: 0;
+    margin: 5px 0 1px;
+    text-indent: 0;
+}
 
 
 
