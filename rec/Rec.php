@@ -149,12 +149,12 @@ class Rec
      */
     private function autoloadClasses()
     {
-        include_once($this->recPath.'/Component.php');
-        include_once($this->recPath.'/Controller.php');
-        include_once($this->recPath.'/Request.php');
-        include_once($this->recPath.'/Model.php');
-        include_once($this->recPath.'/RPDO.php');
-        include_once($this->recPath.'/Widgets.php');
+        include_once('Component.php');
+        include_once('Controller.php');
+        include_once('Request.php');
+        include_once('Model.php');
+        include_once('RPDO.php');
+        include_once('Widgets.php');
 
         spl_autoload_register(array($this, 'autoloadAppClasses'));
     }
@@ -256,12 +256,15 @@ class Rec
 
             /** @var array $controllerActions обработка динамических запросов */
             if($controllerActions = $controllerObj->actions()){
-                foreach ($controllerActions as $casKey=>$casVal) {
+                foreach ($controllerActions as $casKey=>$casVal)
+                {
+                    //print_r($casKey);
+                    //print_r(self::$params);
                     if(in_array($casKey, self::$params))
                     {
                         if(substr($casVal,0,2) == '//') {
                             $actionFile = Rec::$pathApp . substr($casVal, 2).'.php';
-                            var_dump($actionFile);
+                            //var_dump($actionFile);
                             if (file_exists($actionFile)) {
                                 require_once $actionFile;
                                 exit;
@@ -269,7 +272,10 @@ class Rec
                         } else {
                             self::$action = $casVal;
                         }
-                    }
+                    }else{ }
+                       /* $this->urlAdd(self::$controller.'/'.$casKey, $casVal);
+                        $this->determineRunParams();*/
+
                 }
             }
 

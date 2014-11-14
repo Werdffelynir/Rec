@@ -10,6 +10,30 @@ function url(type) {
 }
 
 
+function setlogin(event)
+{
+    var login = $('input[name=login]').val();
+    var password = $('input[name=password]').val();
+
+    if(login.length>2 && password.length>2){
+        $.ajax({
+            type:'post',
+            url:'/login',
+            data:{login:login,password:password},
+            success:function(data){
+                console.log(data);
+            },
+            error:function(data){
+                console.log(data);
+            },
+            beaforeSend:function(){
+
+            }
+        });
+    }
+}
+
+
 
 $(document).ready(function () {
 
@@ -52,7 +76,5 @@ $(document).ready(function () {
     $('.on_btn_login').click(function(eve){
         $('.login_box').fadeToggle(150);
     });
-
-
 
 });

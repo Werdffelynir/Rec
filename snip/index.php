@@ -36,4 +36,6 @@ $R->urlDefault('Main');
 $R->urlNotFound('Main/error404');
 $R->urlAdd('Main/home', 'home');
 
+$R->urlAdd('Main/login', 'login');
+
 $R->run();

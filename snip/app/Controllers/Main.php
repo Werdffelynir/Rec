@@ -11,8 +11,17 @@ class Main extends Base
 
     public function afterAction(){}
 
-    public function actions(){}
+    public function actions()
+    {
+        return [
+            'login'=>'log/{*}',
+        ];
+    }
 
+    public function login()
+    {
+        print_r($_POST);
+    }
 
     public function index()
     {

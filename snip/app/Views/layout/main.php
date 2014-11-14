@@ -11,10 +11,10 @@ use rec\Rec;
     <title><?=$this->title?></title>
 
     <link type="text/css" rel="stylesheet" href="<?= Rec::$url ?>public/css/main.css"/>
-    <script type="text/javascript" src="<?= Rec::$url ?>public/js/jquery.js"></script>
-    <script type="text/javascript" src="<?= Rec::$url ?>public/js/jquery.cookie.js"></script>
-    <script type="text/javascript" src="<?= Rec::$url ?>public/js/jquery.mousewheel.js"></script>
-    <script type="text/javascript" src="<?= Rec::$url ?>public/js/main.js"></script>
+    <script type="text/javascript" src="/public/js/jquery.js"></script>
+    <script type="text/javascript" src="/public/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/public/js/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="/public/js/main.js"></script>
 
     <?= $this->head?>
 </head>
@@ -33,11 +33,9 @@ use rec\Rec;
                 <?php else: ?>
                     <div class="right_title simple_btn on_btn_login">Login</div>
                     <div class="login_box box">
-                        <input name="login" type="text" placeholder="Login" autocomplete="off" />
-                        <input name="password" type="text" placeholder="Password" autocomplete="off"/>
-                        <div class="box_menu">
-                            <a href="#">go</a>
-                        </div>
+                        <input name="login" type="text" value="loginX" placeholder="Login" autocomplete="off" />
+                        <input name="password" type="text" value="passwordX" placeholder="Password" autocomplete="off"/>
+                        <button class="simple_btn" onclick="setlogin(event);">save me</button>
                     </div>
                 <?php endif; ?>
             </div>

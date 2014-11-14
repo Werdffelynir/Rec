@@ -22,10 +22,7 @@ class Base extends Controller
         $this->activeCategory();
     }
 
-    public function login()
-    {
 
-    }
 
     public function logout()
     {
