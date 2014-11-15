@@ -14,11 +14,11 @@ class Main extends Base
     public function actions()
     {
         return [
-            'login'=>'log/{*}',
+            'acLogin'=>'login',
         ];
     }
 
-    public function login()
+    public function acLogin()
     {
         print_r($_POST);
     }

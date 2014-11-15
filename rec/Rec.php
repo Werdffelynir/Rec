@@ -34,9 +34,10 @@ class Rec
 
     public static $controller = null;
     public static $action = null;
-    public static $params = null;
-    public static $args = null;
+    public static $params = [];
+    public static $args = [];
 
+    private $controllerPath = null;
     private $recPath = null;
     private $recUrls = array();
 
@@ -136,13 +137,14 @@ class Rec
 
         $regexp = '|^('.strtr($url,$paramValues).')\/*'.strtr($param,$paramValues).'$|';
 
-        $this->recUrls[$url] = array(
+        $this->recUrls[$url] = [
             'class' => $this->checkClass($class),
             'param' => $param,
             'regexp' => $regexp,
             'args' => $args,
-        );
+        ];
     }
+
 
     /**
      * autoloaded classes from source and application
@@ -158,6 +160,8 @@ class Rec
 
         spl_autoload_register(array($this, 'autoloadAppClasses'));
     }
+
+
     private function autoloadAppClasses($className)
     {
         $className = str_replace('\\', '/', $className);
@@ -165,44 +169,64 @@ class Rec
         if(substr($className, 0, 3) == 'app'){
             $fileName = $className.'.php';
             if (is_file($fileName))
-                include_once($fileName);
+                include_once $fileName;
         }
     }
 
 
     /**
-     * Determine params to run application
+     * Base routes configs
+     *
      * @return string
      */
-    private function determineRunParams()
+    private function determineBaseParams()
     {
-        $args = [];
-        $params = [];
 
         if(empty($this->recUrls['recUrlDefault']))
-            self::ExceptionError('Config option "recUrlDefault" UNDEFINED');
-
+            self::ExceptionError('Config option "recUrlDefault" UNDEFINED. Set value to method urlDefault("ControllerName")');
         $requestUrlDefault = explode('/',$this->recUrls['recUrlDefault']);
 
-        if(!isset($this->recUrls['recUrlNotFound']))
+        if(empty($this->recUrls['recUrlNotFound']))
             $requestUrlNotFound = [$requestUrlDefault[0],'error404'];
         else
             $requestUrlNotFound = explode('/',$this->recUrls['recUrlNotFound']);
 
-        if($this->request === '' || $this->request === '/'){
+        if($this->request === '' || $this->request === '/')
             $classMethods = $requestUrlDefault;
-        }else if($this->request == 'error404' || $this->request == '404') {
+        elseif($this->request == 'error404' || $this->request == '404')
+                $classMethods = $requestUrlNotFound;
+        else
             $classMethods = $requestUrlNotFound;
-        } else
-            $classMethods = $requestUrlNotFound;
+
+        self::$controller = $classMethods[0];
+        self::$action = $classMethods[1];
+
+        $this->controllerPath = $this->controllerChecked($classMethods[0]);
+
+        $this->determineUrls();
+    }
+
+
+    /**
+     * @return string
+     */
+    private function determineUrls()
+    {
+        $classMethods = [];
+        $params = [];
+        $args = [];
 
         foreach (array_keys($this->recUrls) as $kr)
         {
-            if($kr=='recUrlDefault' || $kr=='recUrlNotFound') continue;
+            if($kr=='recUrlDefault' || $kr=='recUrlNotFound')
+                continue;
 
-            $_request = $this->request;
-            if($_part = strpos($this->request,'/')) $_request = substr($this->request,0, $_part);
-            if ($_request==$kr)
+            $request = $this->request;
+
+            if($_part = strpos($this->request,'/'))
+                $request = substr($this->request,0,$_part);
+
+            if ($request==$kr)
             {
                 if(preg_match($this->recUrls[$kr]['regexp'], $this->request, $result))
                 {
@@ -221,23 +245,39 @@ class Rec
             }
         }
 
-        $controllerPath = self::$pathApp.'Controllers/'.$classMethods[0].'.php';
+        if(!empty($classMethods))
+        {
+            self::$controller = $classMethods[0];
+            self::$action = $classMethods[1];
+            self::$params = (!empty($params[0])) ? explode('/',$params[0]) : [];
+            self::$args = $args;
+
+            $this->controllerPath = $this->controllerChecked($classMethods[0]);
+        }
+    }
+
+
+    /**
+     * Проверка файла контролера, назначение параметров
+     *
+     * @param string $controllerName Имя контролера
+     * @return string Путь к контролеру
+     */
+    private function controllerChecked($controllerName)
+    {
+        if(!$controllerName)
+            return null;
+
+        $controllerPath = self::$pathApp.'Controllers/'.$controllerName.'.php';
 
         if(!file_exists($controllerPath)) {
             if(self::$debug)
-                self::ExceptionError('File not exists!',$controllerPath.'<br>  Call: '.$classMethods[0].'::'.$classMethods[1].'()<br>  Request URL: '.$this->request.' ');
-
-            $classMethods[0] = 'Controller';
-            $classMethods[1] = 'error404';
-            $controllerPath = 'Controller.php';
-        }
-
-        self::$controller = $classMethods[0];
-        self::$action = $classMethods[1];
-        self::$params = (!empty($params[0])) ? explode('/',$params[0]) : [];
-        self::$args = $args;
-
-        return $controllerPath;
+                self::ExceptionError('File not exists!',$controllerPath.'<br>  Call: '.$controllerName.' '.self::$controller.'::'.self::$action.'()<br>  Request URL: '.$this->request.' ');
+            self::$controller = 'Controller';
+            self::$action = 'error404';
+            return 'Controller.php';
+        }else
+            return $controllerPath;
     }
 
 
@@ -245,7 +285,9 @@ class Rec
     {
         #start autoload classes
         $this->autoloadClasses();
-        $definedControllerPath = $this->determineRunParams();
+
+        #determine request params
+        $this->determineBaseParams();
 
         $classControllerName = '\\app\\Controllers\\'.self::$controller;
         if(class_exists( $classControllerName ))
@@ -255,27 +297,15 @@ class Rec
             $controllerObj->init();
 
             /** @var array $controllerActions обработка динамических запросов */
-            if($controllerActions = $controllerObj->actions()){
+            if($controllerActions = $controllerObj->actions())
+            {
                 foreach ($controllerActions as $casKey=>$casVal)
                 {
-                    //print_r($casKey);
-                    //print_r(self::$params);
-                    if(in_array($casKey, self::$params))
+                    if($this->request == $casVal)
                     {
-                        if(substr($casVal,0,2) == '//') {
-                            $actionFile = Rec::$pathApp . substr($casVal, 2).'.php';
-                            //var_dump($actionFile);
-                            if (file_exists($actionFile)) {
-                                require_once $actionFile;
-                                exit;
-                            }
-                        } else {
-                            self::$action = $casVal;
-                        }
-                    }else{ }
-                       /* $this->urlAdd(self::$controller.'/'.$casKey, $casVal);
-                        $this->determineRunParams();*/
-
+                        self::$action = $casKey;
+                        continue;
+                    }
                 }
             }
 
@@ -307,7 +337,7 @@ class Rec
 
         } else {
             if(self::$debug)
-                self::ExceptionError('Class not exists','Class path: '.$definedControllerPath.'<br>Class name: '.self::$controller);
+                self::ExceptionError('Class not exists','Class path: '.$this->controllerPath.'<br>Class name: '.self::$controller);
             Request::redirect(self::$url.'/error404',0,'404');
         }
 
