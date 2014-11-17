@@ -4,21 +4,29 @@ namespace rec;
 
 class Model
 {
-    /** @var int  */
+    /** @var int $connectionCount */
     public  static $connectionCount = 0;
-    /** @var array  */
+
+    /** @var array $models */
     private static $models = [];
-    /** @var array  */
-    private static $connectionStaticStack = [];
+
+    /** @var array $connectionStack */
+    private $connectionStack = [];
+
+    /** @var array $connectionStaticStack */
+    public static $connectionStaticStack = [];
 
     /** @var string $table */
     public $table = null;
+
     /** @var string $primaryKey */
     public $primaryKey = 'id';
+
 
     public function __construct()
     {
         $this->init();
+        $this->calledTable();
     }
 
     public function init(){}
@@ -29,9 +37,9 @@ class Model
      */
     public function __get($called)
     {
-        if(!empty(self::$connectionStaticStack[$called]))
+        if(!empty($this->connectionStack[$called]))
         {
-            return self::$connectionStaticStack[$called]['rpdo'];
+            return $this->connectionStack[$called]['rpdo'];
         }
         else if($connection = Rec::$connectionSettings[$called])
         {
@@ -39,12 +47,11 @@ class Model
             $user = (isset($connection['user']))?$connection['user']:'';
             $pass = (isset($connection['pass']))?$connection['pass']:'';
 
-            $this->calledTable();
-
             /** @var RPDO $rPDO */
             $rPDO = new RPDO($dbh, $user, $pass, $this->table, $this->primaryKey);
+            self::$connectionCount ++;
 
-            self::$connectionStaticStack[$called] = [
+            $this->connectionStack[$called] = [
                 'dbh'=>$dbh,
                 'user'=>$user,
                 'pass'=>$pass,
@@ -94,6 +101,8 @@ class Model
     }
 
 
+
+
     /**
      * Установка статического соединение
      *
@@ -122,22 +131,28 @@ class Model
      *
      * @param string $user Имя логин к базе данных
      * @param string $pass Пароль к базе данных
+     * @param string $table
+     * @param string $primaryKey
      * @return bool|RPDO
      */
-    public static function setConnection($connectionName, $dbh, $user='', $pass='')
+    public static function connection($connectionName,$dbh,$user,$pass='',$table=null,$primaryKey=null)
     {
-            /** @var RPDO $rpdo */
-            $rpdo = new RPDO($dbh, $user, $pass);
+        if(empty(self::$connectionStaticStack[$connectionName]))
+        {
+            /** @var RPDO $rPDO */
+            $rPDO = new RPDO($dbh, $user, $pass, $table, $primaryKey);
 
-            $connectionSettings = [
+            self::$connectionStaticStack[$connectionName] = [
                 'dbh'=>$dbh,
                 'user'=>$user,
                 'pass'=>$pass,
-                'rpdo'=>$rpdo];
+                'rpdo'=>$rPDO,
+            ];
+            return $rPDO;
+        }else{
+            return self::$connectionStaticStack[$connectionName]['rpdo'];
+        }
 
-            self::$connectionStaticStack[$connectionName] = $connectionSettings;
-
-            return $rpdo;
     }
 
 
@@ -160,8 +175,8 @@ class Model
         if(!empty(self::$connectionStaticStack[$connectionName]))
         {
             /** @var RPDO $rpdo */
-            $rpdo = self::$connectionStaticStack[$connectionName]['rpdo'];
-            return $rpdo;
+            $rPDO = self::$connectionStaticStack[$connectionName]['rpdo'];
+            return $rPDO;
 
         } else
             return false;

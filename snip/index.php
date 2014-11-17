@@ -35,7 +35,8 @@ $R->connection(
 $R->urlDefault('Main');
 $R->urlNotFound('Main/error404');
 
-$R->urlAdd('Main/home', 'home/{p}');
-//$R->urlAdd('Main/login', 'login/{p}');
+$R->urlAdd('Main/edit', 'edit/{p:type}/{p:link}');
+$R->urlAdd('Main/cat', 'cat/{p:c_link}/{p:sc_link}');
+$R->urlAdd('Main/snippet', 'snippet/{p:s_link}');
 
 $R->run();

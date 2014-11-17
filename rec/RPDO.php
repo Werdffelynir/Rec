@@ -46,7 +46,6 @@ class RPDO
         $this->password = $password;
         $this->table = $table;
         $this->primaryKey = $primaryKey;
-
     }
 
 
@@ -158,9 +157,24 @@ class RPDO
         return self::$STH->fetch();
     }
 
+    /**
+     * Извлечь строку с запроса
+     *
+     * Выберает типы: assoc, class, obj
+     *
+     * @param string $type
+     * @return mixed
+     */
+    public function one($type = 'assoc')
+    {
+        return $this->row($type);
+    }
+
 
     /**
      * Извлечь несколько строк
+     *
+     * Выберает типы: assoc, class, obj
      *
      * @param  $type
      * @return array
@@ -215,7 +229,11 @@ class RPDO
             $this->sql = $constructSql;
             self::$STH = self::$DBH->prepare($constructSql);
             $resultInsert = self::$STH->execute($dataValue);
-            return $resultInsert;
+
+            if($resultInsert)
+                return self::$DBH->lastInsertId();
+            else
+                return $resultInsert;
         } else {
             die("Количество полей не соответствует количеству значений!");
         }
@@ -360,6 +378,8 @@ class RPDO
      *      "content",
      *      "author"
      * ));
+     *
+     * ->getAll(null, "category='some' and visibly=1");
      *
      * </pre>
      *
@@ -565,6 +585,10 @@ class RPDO
             return 0;
     }
 
+    public function lastInsertId()
+    {
+        return self::$DBH->lastInsertId();
+    }
 
     /**
      * Закрыть соединение

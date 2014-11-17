@@ -19,7 +19,7 @@ class Controller {
     public $partial = 'main';
 
     public $outPosition = array();
-    public $outPositionDefault = 'out';
+    public $outPositionDefault = 'default';
 
     public function __construct()
     {
@@ -91,6 +91,18 @@ class Controller {
         else echo $view;
     }
 
+    /*public function renderOut($position, array $data = array())
+    {
+        if(is_array($position))
+        {
+            foreach ($position as $variablePosition=>$variableData) {
+                $this->outPosition[$variablePosition]=$variableData;
+            }
+
+        }else if(is_string($position)){
+
+        }
+    }*/
 
     /**
      * @param string $partial   если не пустая строка по умолчанию Views/controller/method.php
@@ -111,7 +123,8 @@ class Controller {
         if(is_file($viewLayout))
             require_once $viewLayout;
         else
-            die('file not exists '.$viewLayout); //todo: Exception set
+            if(Rec::$debug)
+                Rec::ExceptionError('Layout file not find', 'file not exists '.$viewLayout);
 
     }
 
@@ -120,10 +133,17 @@ class Controller {
      * Позиция вывода контента render() в layout шаблоне
      *
      * @param string $position
+     * @param bool $skipExists
      */
-    public function out($position='out')
+    public function out($position='out', $skipExists=false)
     {
-        echo $this->outPosition[$position];
+        if(isset($this->outPosition[$position]))
+            echo $this->outPosition[$position];
+        else
+            if(!$skipExists) {
+                if(Rec::$debug)
+                    Rec::ExceptionError('Out position undefined', $position);
+            }
     }
 
 
@@ -147,10 +167,12 @@ class Controller {
         }
     }
 
-    public function redirect($url='', $thisApp=true)
+    public function redirect($url='', $thisApp=true, $sleep=0)
     {
         if($thisApp)
-            $url = Rec::$url.'/'.$url;
+            $url = Rec::$urlFull.$url;
+
+        sleep($sleep);
 
         Request::redirect($url);
     }
@@ -159,9 +181,89 @@ class Controller {
     {
         return Rec::urlArg($param, $element);
     }
+
+    /**
+     * Checked if ajax request
+     * @return bool
+     */
     public function isAjax()
     {
         return Request::isAjax();
     }
 
+    /**
+     * Еквивалентно глобальному массиву $_POST[$name]
+     * @param null $name
+     * @param bool $clear
+     * @return null|string
+     */
+    public function post($name=null, $clear=false)
+    {
+        return Request::post($name, $clear);
+    }
+
+    /**
+     * Еквивалентно глобальному массиву $_GET[$name]
+     *
+     * @param null $name
+     * @param bool $clear
+     * @return null|string
+     */
+    public function get($name=null, $clear=false)
+    {
+        return Request::get($name, $clear);
+    }
+
+    /**
+     * Еквивалентно глобальному массиву $_POST[$name] || $_GET[$name]
+     * @param $name
+     * @param bool $clear
+     * @return null|string
+     */
+    public function value($name, $clear=false)
+    {
+        return Request::value($name, $clear);
+    }
+
+    /**
+     * Устанавлевает или извлекает значние session
+     *
+     * @param string $name      Если указано только одно значение session извлекаються по имени
+     * @param null $setValue    Задает значение для $name, если указано null
+     * @param bool $clear
+     * @return bool|null|string
+     */
+    public function session($name, $setValue=null, $clear=false)
+    {
+        return Request::session($name, $setValue, $clear);
+    }
+
+
+    /**
+     * Устанавлевает или извлекает значние cookie
+     *
+     * @param string $key           Если указано только одно значение cookie извлекаються по имени
+     * @param bool|string $value    Задает значение для $key, если указано null удаляет это значение, при этом сама кука остается существовать
+     * @param null $expire
+     * @param null $domain
+     * @param null $path
+     * @return bool|null|string
+     */
+    public function cookie($key, $value=false, $expire = null, $domain = null, $path = null)
+    {
+        return Request::cookie($key, $value, $expire, $domain, $path);
+    }
+
+    /**
+     * Удаляет cookie
+     *
+     * @param $key
+     * @param null $domain
+     * @param null $path
+     * @return bool
+     */
+    public function deleteCookie($key, $domain = null, $path = null)
+    {
+        return Request::deleteCookie($key, $domain, $path);
+    }
 } 

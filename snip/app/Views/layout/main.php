@@ -23,19 +23,21 @@ use rec\Rec;
 <div class="page">
 
     <div class="header box grid clear">
-        <div class="grid-3 first"><h1>SNIPPETS NOTES</h1></div>
+        <div class="grid-3 first"><a href="/"> <h1>SNIPPETS NOTES</h1> </a></div>
         <div class="grid-6"> <div class="box search"><input name="search" type="text"/> SEARCH</div> </div>
         <div class="grid-3">
             <div class="right_box">
                 <?php if($this->auth): ?>
-                    <div class="right_title simple_btn">Create New</div>
-                    <div class="right_title simple_btn">Logout</div>
+                    <a class="right_title simple_btn" href="/edit/create">Create New</a>
+                    <a class="right_title simple_btn" href="/logout">Logout</a>
                 <?php else: ?>
                     <div class="right_title simple_btn on_btn_login">Login</div>
                     <div class="login_box box">
-                        <input name="login" type="text" value="loginX" placeholder="Login" autocomplete="off" />
-                        <input name="password" type="text" value="passwordX" placeholder="Password" autocomplete="off"/>
-                        <button class="simple_btn" onclick="setlogin(event);">save me</button>
+                        <form action="/login" method="post">
+                            <input name="login" type="text" value="werdffelynir" placeholder="Login" autocomplete="off" />
+                            <input name="password" type="text" value="werd000666" placeholder="Password" autocomplete="off"/>
+                            <input type="submit" class="simple_btn"  value="save me" />
+                        </form>
                     </div>
                 <?php endif; ?>
             </div>
@@ -47,99 +49,7 @@ use rec\Rec;
     </div>
 
     <div class="content_box grid clear">
-
-        <div class="content_left box grid-8 first">
-
-            <div class="box content_item">
-                <div class="grid clear">
-                    <div class="grid-7 first"><p>Snippet title name</p></div>
-                    <div class="grid-5">
-                        <div class="box_menu">
-                            <a href="#">edit</a>
-                            <a href="#">delete</a>
-                            <a href="#">cancel</a>
-                            <a href="#">create</a>
-                        </div>
-                    </div>
-                </div>
-                <hr/>
-                <div class="grid clear">
-                    <div class="grid-9 first">
-                        <a href="">Category</a> : <a href="">Sub category</a>
-                        <span class="tags">
-                            <a href="">php</a>,
-                            <a href="">ajax</a>,
-                            <a href="">form</a>
-                        </span>
-                    </div>
-                    <div class="grid-1">+5</div>
-                    <div class="grid-2">date: 02.15.2014</div>
-                </div>
-            </div>
-
-            <div class="box content_item">
-                <div class="grid clear">
-                    <div class="grid-7 first"><p>Snippet title name</p></div>
-                    <div class="grid-5">
-                        <div class="box_menu">
-                            <a href="#">edit</a>
-                            <a href="#">delete</a>
-                            <a href="#">cancel</a>
-                            <a href="#">create</a>
-                        </div>
-                    </div>
-                </div>
-                <hr/>
-                <div class="grid clear">
-                    <div class="grid-9 first">
-                        <a href="">Category</a> : <a href="">Sub category</a>
-                        <span class="tags">
-                            <a href="">php</a>,
-                            <a href="">ajax</a>,
-                            <a href="">form</a>
-                        </span>
-                    </div>
-                    <div class="grid-1">+5</div>
-                    <div class="grid-2">date: 02.15.2014</div>
-                </div>
-            </div>
-
-            <div class="box content_item">
-                <div class="grid clear">
-                    <div class="grid-7 first"><p>Snippet title name</p></div>
-                    <div class="grid-5">
-                        <div class="box_menu">
-                            <a href="#">edit</a>
-                            <a href="#">delete</a>
-                            <a href="#">cancel</a>
-                            <a href="#">create</a>
-                        </div>
-                    </div>
-                </div>
-                <hr/>
-                <div class="grid clear">
-                    <div class="grid-9 first">
-                        <a href="">Category</a> : <a href="">Sub category</a>
-                        <span class="tags">
-                            <a href="">php</a>,
-                            <a href="">ajax</a>,
-                            <a href="">form</a>
-                        </span>
-                    </div>
-                    <div class="grid-1">+5</div>
-                    <div class="grid-2">date: 02.15.2014</div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="content_right box grid-4">
-            <?php
-            //Rec::inc('layout/sub_cat_menu');
-            Rec::inc('layout/editor');
-            ?>
-        </div>
-
+        <?php $this->out('default'); ?>
     </div>
 
     <div class="footer box grid">

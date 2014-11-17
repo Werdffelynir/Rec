@@ -124,6 +124,8 @@ input[type=text], input[type=password]:focus, select:focus, textarea:focus{
 .footer{
     margin-top: 5px;
     min-height: 30px;
+    font-size: 11px;
+    text-align: center;
 }
 
 /* HEADER */
@@ -178,6 +180,15 @@ input[name=search]:focus{
     color: #999999;
     text-shadow: -1px -1px rgba(50,50,50,0.8);
 }
+input[type=submit].simple_btn{
+    display: inline;
+    margin-bottom: 0;
+    width: inherit;
+    vertical-align: baseline;
+}
+
+
+
 
 /** login form */
 .right_box{
@@ -269,10 +280,17 @@ CONTENT
     margin-bottom: 3px;
 }
 
+
 .content_item{
+    font-family: Consolas, "Courier New", Courier, monospace;
+    color: #668E96;
     padding: 3px;
     margin: 0px 0px 5px;
 }
+.content_item:hover{
+    background-color: #2F2F2F;
+}
+
 .content_item hr{
     padding: 0; margin: 2px 0;
     height: 1px;
@@ -282,16 +300,45 @@ CONTENT
     padding: 0; margin: 0;
     line-height: 20px;
 }
-.tags{
-    margin-left: 10px;
-}
-.tags a{
-    color: #989bff;
+
+
+.content_item_title{
     text-decoration: none;
+    color: #AAFFFF;
+    font-weight: bold;
 }
-.tags a:hover{
-    color: #cccdff
+.content_item_path a{
+    text-decoration: none;
+    color: rgb(150, 150, 170);
 }
+.content_item_path a:hover{
+    color: rgb(200, 200, 200);
+}
+.content_item_tags{
+    text-align: right;
+    font-size: 11px;
+}
+.content_item_tags a{
+    text-decoration: none;
+    color: #7576AA;
+}
+.content_item_tags a:hover{
+    color: rgb(200, 200, 200);
+}
+
+.incontent_item_tags{
+    text-align:left;
+    font-size: 11px;
+}
+.incontent_item_tags a{
+    text-decoration: none;
+    color: #7576AA;
+}
+.incontent_item_tags a:hover{
+    color: rgb(200, 200, 200);
+}
+
+
 
 /* -----------------------------------------------------------------------------
 SNIPPET MENU LEFT
@@ -376,4 +423,11 @@ ul#left_ul a.expanded {
 }
 
 
-
+form.save_form{}
+form.save_form input[type=submit]{
+    margin-top: 10px;
+    padding: 2px 25px;
+}
+.save_btn{
+    text-align: right;
+}

@@ -1,4 +1,4 @@
-/* BASE URL */
+/* BASE URL
 function url(type) {
     var url = null;
     if (type == 'base') {
@@ -7,9 +7,9 @@ function url(type) {
         url = $('meta[data-url]').attr('data-url-theme');
     }
     return url;
-}
+}*/
 
-
+/*
 function setlogin(event)
 {
     var login = $('input[name=login]').val();
@@ -32,7 +32,7 @@ function setlogin(event)
         });
     }
 }
-
+*/
 
 
 $(document).ready(function () {
@@ -73,7 +73,7 @@ $(document).ready(function () {
     });
      */
 
-    $('.on_btn_login').click(function(eve){
+    $('.on_btn_login').click(function(event){
         $('.login_box').fadeToggle(150);
     });
 

@@ -62,7 +62,7 @@ class Request {
         }
     }
 
-    public static function session($name=null, $setValue=null, $clear=false)
+    public static function session($name, $setValue=null, $clear=false)
     {
         if(!isset($_SESSION))
             session_start();
