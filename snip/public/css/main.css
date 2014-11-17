@@ -286,6 +286,7 @@ CONTENT
     color: #668E96;
     padding: 3px;
     margin: 0px 0px 5px;
+    border: none;
 }
 .content_item:hover{
     background-color: #2F2F2F;

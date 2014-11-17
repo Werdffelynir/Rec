@@ -35,16 +35,15 @@ class Main extends Base
         ]);
     }
 
-
-
-    public function cat($c_link,$sc_link=null)
+    public function cat($c_link, $sc_link=null)
     {
         $snipModel = new Snippets();
         $allRecords = $snipModel->allByCategoryLink($c_link);
+        $treeRecords = $snipModel->treeCategoryLink($c_link);
 
         $this->render('index', [
             'contentLeft'=> $this->renderPartial('items', ['allRecords'=>$allRecords]),
-            'contentRight'=> null,
+            'contentRight'=> $this->renderPartial('tree', ['treeRecords'=>$treeRecords]),
         ]);
     }
 
@@ -52,10 +51,11 @@ class Main extends Base
     {
         $snipModel = new Snippets();
         $record = $snipModel->recordLink($s_link);
+        $treeRecords = $snipModel->treeCategoryLink($record->cat_link);
 
         $this->render('index', [
             'contentLeft'=> $this->renderPartial('view', ['record'=>$record]),
-            'contentRight'=> null,
+            'contentRight'=> $this->renderPartial('tree', ['treeRecords'=>$treeRecords]),
         ]);
     }
 } 

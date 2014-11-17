@@ -37,6 +37,16 @@ class Snippets extends Model
         return $this->db->query($SQL)->all("obj");
     }
 
+    public function treeCategoryLink($link)
+    {
+        $tree = [];
+        $_tree = $this->allByCategoryLink($link);
+        foreach ($_tree as $tKey=>$tVal) {
+            $tree[$tVal->cat_title][] = $tVal;
+        }
+        return $tree;
+    }
+
     public function recordLink($link)
     {
         $link = filter_var($link,FILTER_SANITIZE_STRING);
