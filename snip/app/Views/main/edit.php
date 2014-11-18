@@ -4,14 +4,16 @@
  * @var array $formData
  * @var $userId
  */
+
+$snippet = $formData['snippet'];
 ?>
 
-<form action="/edit/insert" method="post" class="save_form">
+<form action="/edit/save/<?=$snippet['id']?>" method="post" class="save_form">
 
     <div class="content_left box grid-8 first">
 
         <div class="edit">
-            <textarea name="content" id="" cols="30" rows="10"></textarea>
+            <textarea name="content" id="" cols="30" rows="10"><?=$snippet['content']?></textarea>
         </div>
 
     </div>
@@ -21,14 +23,14 @@
         <div class="edit">
 
             <p>Snippet name</p>
-            <input name="title" type="text" value="" placeholder="Title"/>
+            <input name="title" type="text" value="<?=$snippet['title']?>" placeholder="Title"/>
 
             <p>Category</p>
             <select name="id_category" id="">
-                <?php foreach ($formData['categories'] as $category): ?>
-                    <option value="<?= $category['id'] ?>"><?= $category['title'] ?></option>
-                <?php endforeach; ?>
                 <option value="new">New Category</option>
+                <?php foreach ($formData['categories'] as $category): ?>
+                    <option <?= ($snippet['id_category']==$category['id'])?'selected':'';?> value="<?= $category['id'] ?>"><?= $category['title'] ?></option>
+                <?php endforeach; ?>
             </select>
             <input name="new_category" type="text" value="" placeholder="Category" style="display:none"/>
 
@@ -39,16 +41,17 @@
             <input name="new_sub_category" type="text" value="" placeholder="Sub Category"/>
 
             <p>Search tags</p>
-            <input name="tags" type="text" value="" placeholder="Search tags" />
+            <input name="tags" type="text" value="<?= $snippet['tags']?>" placeholder="Search tags" />
 
             <p>Type published</p>
             <select name="type" id="">
-                <option value="public">public</option>
-                <option value="private">private</option>
+                <option <?=($snippet['type']=='public')?'selected':''?> value="public">public</option>
+                <option <?=($snippet['type']=='private')?'selected':''?>value="private">private</option>
             </select>
 
             <div class="save_btn">
                 <input name="id_user" type="text" value="<?=$userId?>" hidden />
+                <input name="hide_id_sub_category" type="text" value="<?= $snippet['id_sub_category']?>" hidden />
                 <input type="submit" value="Save" class="simple_btn"/>
             </div>
         </div>
@@ -65,6 +68,17 @@
     var inputSubCat = $('input[name=new_sub_category]');
     var subCatData = $.parseJSON('<?=$formData['subcategories']?>');
 
+    //for update
+    var hideSubCat = parseInt($('input[name=hide_id_sub_category]').val());
+    if(hideSubCat >= 1){
+        var catId = parseInt('<?=$snippet['id_category']?>');
+        var currentOptionHtml = createSelectList(subCatData[catId], hideSubCat);
+        inputCat.css('display', 'none');
+        inputSubCat.css('display', 'none');
+        selectSubCat.css('display', 'block');
+        selectSubCat.html(currentOptionHtml);
+    }
+
     selectCat.change(function () {
         var currentCat = $(this).val();
         if (currentCat == 'new') {
@@ -79,11 +93,7 @@
             }
 
             var currentCatData = subCatData[currentCat];
-            console.log(currentCatData);
-            var optionHtml = '<option value="new">New Sub Category</option>';
-            for (var ci = 0; ci < currentCatData.length; ci++) {
-                optionHtml += '<option value="' + currentCatData[ci].id + '">' + currentCatData[ci].title + '</option>';
-            }
+            var optionHtml = createSelectList(currentCatData);
             selectSubCat.html(optionHtml);
         }
     });
@@ -96,5 +106,18 @@
             inputSubCat.css('display', 'none');
         }
     });
+
+    function createSelectList(currentCatData, idSubCat)
+    {
+        var select = '';
+        var optionHtml = '<option value="new">New Sub Category</option>';
+        for (var ci = 0; ci < currentCatData.length; ci++) {
+            if(idSubCat==parseInt(currentCatData[ci].id))
+                select = 'selected';
+            optionHtml += '<option '+select+' value="' + currentCatData[ci].id + '">' + currentCatData[ci].title + '</option>';
+            select = '';
+        }
+        return optionHtml;
+    }
 
 </script>

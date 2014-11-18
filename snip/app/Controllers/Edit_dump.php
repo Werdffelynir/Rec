@@ -7,44 +7,56 @@ use app\Models\Snippets;
 use app\Models\Subcategory;
 use rec\Controller;
 
-class Edit extends Controller
+class Edit_dump extends Controller
 {
+
     public $formData = [];
 
-    private $modelSnippets;
-    private $modelCategory;
-    private $modelSubcategory;
-
-    public function __construct()
+    public function __construct($type, $link)
     {
-        $this->modelSnippets = new Snippets();
-        $this->modelCategory = new Category();
-        $this->modelSubcategory = new Subcategory();
+        $modelSnippets = new Snippets();
+        $modelCategory = new Category();
+        $modelSubcategory = new Subcategory();
 
-        $subCategories = [];
-        $_subCategories = $this->modelSubcategory->db->getAll(null,"visibly=1 and type='public'");
-        foreach ($_subCategories as $sc) {
+        $this->formData['categories'] = $modelCategory->db->getAll(null,"visibly=1 and type='public'");
+
+        $subCat = [];
+        $_subCat = $modelSubcategory->db->getAll(null,"visibly=1 and type='public'");
+        foreach ($_subCat as $sc) {
             $_sc['id'] = $sc['id'];
             $_sc['title'] = $sc['title'];
-            $subCategories[$sc['id_category']][] = $_sc;
+            $subCat[$sc['id_category']][] = $_sc;
         }
+        $this->formData['subcategories'] = json_encode($subCat);
 
-        $this->formData['snippet'] = $this->modelSnippets->fields;
-        $this->formData['categories'] = $this->modelCategory->db->getAll(null,"visibly=1 and type='public'");
-        $this->formData['subcategories'] = json_encode($subCategories);
+        if(empty($link))
+            $this->formData['snippet'] = $modelSnippets->fields;
+        else
+            $this->formData['snippet'] = $modelSnippets->db->getByAttr('link',$link);
+
+        switch($type){
+            case 'create':
+                break;
+            case 'update':
+                break;
+            case 'delete':
+                $this->delete($link);
+                break;
+            case 'save':
+                $this->save($link);
+                break;
+        }
     }
 
-    public function update($link)
+    private function update($link)
     {
-        $this->formData['snippet'] = $this->modelSnippets->db->getByAttr('link',$link);
+        $modelSnippet = new Snippets();
+        $this->formData['snippet'] = $modelSnippet->db->getByAttr('link',$link);
     }
-
-    public function delete($link)
-    {
+    private function delete($link){
 
     }
-
-    public function save($updateLink=null)
+    private function save($update_link=null)
     {
         $resultInsSnippet = null;
         $snippetLink = null;
@@ -60,16 +72,19 @@ class Edit extends Controller
         $data['title'] = $this->post('title');
         $data['content'] = $this->post('content');
         $data['link'] = $this->post('link');
+        $data['ithelp'] = $this->post('ithelp');
         $data['datecreate'] = $this->post('datecreate');
 
         if($idCategory == 'new'){
+            $catModel = new Category();
 
+            // check lnk to exists
             $categoryLink = $this->createLink($newCategory);
-            $checkCatLink = $this->modelCategory->db->getByAttr('link',$categoryLink);
-            if(!empty($checkCatLink))
-                $categoryLink = $categoryLink.'_'.$this->modelCategory->db->lastId();
+            $checkLink = $catModel->db->getByAttr('link',$categoryLink);
+            if(!empty($checkLink))
+                $categoryLink = $this->createLink($checkLink,5);
 
-            $resultInsCat = $this->modelCategory->db->insert(
+            $resultInsCat = $catModel->db->insert(
                 ["id_user","title","link","type","datecreate"],
                 [
                     'id_user'=>$data['id_user'],
@@ -85,9 +100,16 @@ class Edit extends Controller
 
         if($idSubCategory == 'new'){
 
+            $subCatModel = new Subcategory();
+
+            // check lnk to exists
             $subCategoryLink = $this->createLink($newSubCategory);
-            $resultInsSubCat = $this->modelSubcategory->db->insert(
-                ["id_category","id_user","title","link","type","datecreate"],
+            $checkSubCatLink = $subCatModel->db->getByAttr('link',$subCategoryLink);
+            if(!empty($checkSubCatLink))
+                $subCategoryLink = $this->createLink($subCategoryLink,5);
+
+            $resultInsSubCat = $subCatModel->db->insert(
+                ["id_category", "id_user", "title", "link", "type", "datecreate"],
                 [
                     'id_category' => $data['id_category'],
                     'id_user' => $data['id_user'],
@@ -103,11 +125,27 @@ class Edit extends Controller
 
         if(is_numeric($data['id_category']) && is_numeric($data['id_sub_category'])){
 
-            $snippetLink = 's'.$this->modelSnippets->db->lastId().'_'.$this->createLink($data['title']);
+            $snippetsModel = new Snippets();
+
+            // check lnk to exists
+            $snippetLink = $this->createLink($data['title']);
+            $checkSnipLink = $snippetsModel->db->getByAttr('link',$snippetLink);
+            if(!empty($checkSnipLink))
+                $snippetLink = $this->createLink($snippetLink,5);
 
             if(!empty($update_link)){
-                $resultInsSnippet = $this->modelSnippets->db->update(
-                    ["$this->modelSnippets","id_sub_category","id_user","link","title","content","tags","type","datecreate"],
+                $resultInsSnippet = $snippetsModel->db->update(
+                    [
+                        "id_category",
+                        "id_sub_category",
+                        "id_user",
+                        "link",
+                        "title",
+                        "content",
+                        "tags",
+                        "type",
+                        "datecreate"
+                    ],
                     [
                         'id_category' => $data['id_category'],
                         'id_sub_category' => $data['id_sub_category'],
@@ -122,8 +160,18 @@ class Edit extends Controller
                     'id='.(int)$update_link
                 );
             }else{
-                $resultInsSnippet = $this->modelSnippets->db->insert(
-                    ["id_category","id_sub_category","id_user","link","title","content","tags","type","datecreate"],
+                $resultInsSnippet = $snippetsModel->db->insert(
+                    [
+                        "id_category",
+                        "id_sub_category",
+                        "id_user",
+                        "link",
+                        "title",
+                        "content",
+                        "tags",
+                        "type",
+                        "datecreate"
+                    ],
                     [
                         'id_category' => $data['id_category'],
                         'id_sub_category' => $data['id_sub_category'],

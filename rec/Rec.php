@@ -345,11 +345,27 @@ class Rec
 
     public static $connectionSettings = [];
 
-    public function connection(array $data)
+    public function setConnection(array $data)
     {
         foreach ($data as $key=>$value) {
             self::$connectionSettings[$key]=$value;
         }
+    }
+
+    public static $conf = [];
+
+    public function setConf(array $data)
+    {
+        foreach ($data as $key=>$value) {
+            self::$conf[$key]=$value;
+        }
+    }
+    public static function conf($key)
+    {
+        if(isset(self::$conf[$key]))
+            return self::$conf[$key];
+        else
+            return false;
     }
 
 

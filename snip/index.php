@@ -12,11 +12,25 @@ $R->setApplicationName('Snippets Notes');
 /**
  * Create connection with database
  */
-$R->connection(
+$R->setConnection(
     [
-        'db' => [
-            'dbh' => 'sqlite:../snip/app/Database/snippets.sqlite',
-        ]
+        'db' =>
+            [
+                'dbh' => 'sqlite:../snip/app/Database/snippets.sqlite',
+            ]
+    ]
+);
+
+/**
+ * Application some config params
+ */
+$R->setConf(
+    [
+        'email'=>'werdffelynir@gmail.com',
+        'off_links'=>
+            [
+                'index','search','cat','subcat','snippet','edit','delete','create'
+            ]
     ]
 );
 
@@ -35,8 +49,13 @@ $R->connection(
 $R->urlDefault('Main');
 $R->urlNotFound('Main/error404');
 
-$R->urlAdd('Main/edit', 'edit/{p:type}/{p:link}');
-$R->urlAdd('Main/cat', 'cat/{p:c_link}/{p:sc_link}');
-$R->urlAdd('Main/snippet', 'snippet/{p:s_link}');
+$R->urlAdd('Main/index', 'index');
+$R->urlAdd('Main/search', 'search/{p:words}');
+$R->urlAdd('Main/cat', 'cat/{p:link}/{n:page}');
+$R->urlAdd('Main/subcat', 'subcat/{p:link}/{n:page}');
+$R->urlAdd('Main/snippet', 'snippet/{p:link}');
+$R->urlAdd('Main/create', 'create');
+$R->urlAdd('Main/edit', 'edit/{p:link}');
+$R->urlAdd('Main/delete', 'delete/{p:link}');
 
 $R->run();

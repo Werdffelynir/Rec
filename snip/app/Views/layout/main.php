@@ -23,12 +23,12 @@ use rec\Rec;
 <div class="page">
 
     <div class="header box grid clear">
-        <div class="grid-3 first"><a href="/"> <h1>SNIPPETS NOTES</h1> </a></div>
+        <div class="grid-3 first"><a class="logo" href="/"> <h1>SNIPPETS NOTES</h1> </a></div>
         <div class="grid-6"> <div class="box search"><input name="search" type="text"/> SEARCH</div> </div>
         <div class="grid-3">
             <div class="right_box">
                 <?php if($this->auth): ?>
-                    <a class="right_title simple_btn" href="/edit/create">Create New</a>
+                    <a class="right_title simple_btn" href="/create">Create New</a>
                     <a class="right_title simple_btn" href="/logout">Logout</a>
                 <?php else: ?>
                     <div class="right_title simple_btn on_btn_login">Login</div>

@@ -4,6 +4,7 @@ namespace app\Controllers;
 
 use \app\Base;
 use app\Models\Snippets;
+use rec\Rec;
 
 class Main extends Base
 {
@@ -24,22 +25,28 @@ class Main extends Base
         ]);
     }
 
-
-    public function edit($type='create',$link=null)
+    public function search($words)
     {
-        $edit = new Edit($type, $link);
-
-        $this->render('edit', [
-            'formData'=> $edit->formData,
-            'userId'=> $this->auth,
+        $this->render('index', [
+            'contentLeft'=> null,
+            'contentRight'=> null,
         ]);
     }
 
-    public function cat($c_link, $sc_link=null)
+    /**
+     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+     * SHOW RECORDS
+     */
+
+    /**
+     * @param $link
+     * @param int $page
+     */
+    public function cat($link,$page=1)
     {
         $snipModel = new Snippets();
-        $allRecords = $snipModel->allByCategoryLink($c_link);
-        $treeRecords = $snipModel->treeCategoryLink($c_link);
+        $allRecords = $snipModel->allByCategoryLink($link);
+        $treeRecords = $snipModel->treeCategoryLink($link);
 
         $this->render('index', [
             'contentLeft'=> $this->renderPartial('items', ['allRecords'=>$allRecords]),
@@ -47,10 +54,15 @@ class Main extends Base
         ]);
     }
 
-    public function snippet($s_link)
+    public function subcat($link,$page=1)
+    {
+
+    }
+
+    public function snippet($link,$page=1)
     {
         $snipModel = new Snippets();
-        $record = $snipModel->recordLink($s_link);
+        $record = $snipModel->recordLink($link);
         $treeRecords = $snipModel->treeCategoryLink($record->cat_link);
 
         $this->render('index', [
@@ -58,4 +70,34 @@ class Main extends Base
             'contentRight'=> $this->renderPartial('tree', ['treeRecords'=>$treeRecords]),
         ]);
     }
+
+
+    /**
+     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+     * EDITS RECORDS
+     */
+    public function create()
+    {
+        $edit = new Edit();
+        $this->render('edit', [
+            'formData'=> $edit->formData,
+            'userId'=> $this->auth,
+        ]);
+    }
+
+    public function edit($link)
+    {
+        //$edit = new Edit($type, $link);
+
+        //$this->render('edit', [
+        //    'formData'=> $edit->formData,
+        //    'userId'=> $this->auth,
+        //]);
+    }
+
+    public function delete($link)
+    {
+
+    }
+
 } 

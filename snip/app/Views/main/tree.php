@@ -3,14 +3,22 @@
 use \rec\Rec;
 
 function actMenu($link){
-    $arg2 = Rec::$args['s_link'];
-    if(isset($arg2) AND $link ==$arg2)
-        return  "activeMenu";
+    $arg = Rec::urlArg();
+    if(isset($arg) AND $link == $arg)
+        echo "activeMenu";
 }
 /**
  * @var array $treeRecords;
  */
 ?>
+
+<div class="box panel">
+    <div class="box_menu">
+        <a href="#">Public</a>
+        <a href="#">Private</a>
+    </div>
+</div>
+
 <ul class="left_menu" id="left_ul">
 <?php foreach($treeRecords as $sKey=>$sItems): ?>
 
@@ -18,7 +26,7 @@ function actMenu($link){
         <ul style="/*display: none;*/">
 
             <?php foreach($sItems as $sItem): ?>
-                <li class="<?= actMenu($sItem->link)?>">
+                <li class="<?actMenu($sItem->link)?>">
                     <?= '<a href="/snippet/'.$sItem->link.'"> '.$sItem->title.' </a>';?>
                 </li>
             <?php endforeach; ?>

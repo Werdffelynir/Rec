@@ -4,6 +4,17 @@
 
 /** COMMON
 ********************************************************** */
+/* fonts */
+
+@import "http://webfonts.ru/import/aleksandrac.css";
+/* font-family: 'AleksandraC'; */
+
+@import "http://webfonts.ru/import/arnamu.css";
+/* font-family: 'Arian AMU'; */
+
+@import "http://webfonts.ru/import/ubuntu.css";
+/* font-family: 'Ubuntu Mono'; */
+
 
 
 *{}
@@ -11,7 +22,7 @@ html{}
 body{
     background-color: #333333;
     color: palegreen;
-    font-family: 'Ubuntu Condensed', 'Ubuntu', sans-serif;
+    font-family: AleksandraC, 'Ubuntu Condensed', 'Ubuntu', sans-serif;
     font-size: 12px;
 }
 
@@ -91,7 +102,14 @@ input[type=text], input[type=password]:focus, select:focus, textarea:focus{
 }
 
 /** HEADER */
-
+.logo{
+    color: #FFA468;
+    text-decoration: none;
+    text-shadow: 1px 1px 2px #111111;
+}
+.logo:hover{
+    color: #FF6600;
+}
 
 .page{
     width: 960px;
@@ -163,6 +181,7 @@ input[name=search]:focus{
     color: #E1E1E1;
     text-shadow: 1px -1px rgba(0,0,0,0.5);
     font-size: 11px;
+    font-family: Consolas, "Courier New", Courier, monospace;
     cursor: pointer;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -280,16 +299,16 @@ CONTENT
     margin-bottom: 3px;
 }
 
-
-.content_item{
+.content_item, .panel{
     font-family: Consolas, "Courier New", Courier, monospace;
     color: #668E96;
     padding: 3px;
     margin: 0px 0px 5px;
     border: none;
+    background-color: #2F2F2F;
 }
 .content_item:hover{
-    background-color: #2F2F2F;
+    background-color: #323232;
 }
 
 .content_item hr{

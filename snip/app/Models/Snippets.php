@@ -8,6 +8,21 @@ class Snippets extends Model
 {
     public $table = 'snippets';
     public $primaryKey = 'id';
+    public $fields = [
+        'id'=>'',
+        'id_category'=>'',
+        'id_sub_category'=>'',
+        'id_user'=>'',
+        'link'=>'',
+        'description'=>'',
+        'title'=>'',
+        'content'=>'',
+        'visibly'=>'',
+        'ithelp'=>'',
+        'tags'=>'',
+        'type'=>'',
+        'datecreate'=>''
+    ];
 
     public function init(){}
 
@@ -22,7 +37,7 @@ class Snippets extends Model
     }
 
 
-    public function allByCategoryLink($link)
+    public function allByCategoryLink($link, $type='public')
     {
         $link = filter_var($link,FILTER_SANITIZE_STRING);
 
@@ -32,22 +47,22 @@ class Snippets extends Model
                 FROM snippets sp
                 LEFT JOIN Category ct ON (ct.id = sp.id_category)
                 LEFT JOIN Subcategory sct ON (sct.id = sp.id_sub_category)
-                WHERE ct.link='{$link}'";
+                WHERE ct.link='{$link}' and sp.type='{$type}'";
 
         return $this->db->query($SQL)->all("obj");
     }
 
-    public function treeCategoryLink($link)
+    public function treeCategoryLink($link, $type='public')
     {
         $tree = [];
-        $_tree = $this->allByCategoryLink($link);
+        $_tree = $this->allByCategoryLink($link, $type);
         foreach ($_tree as $tKey=>$tVal) {
-            $tree[$tVal->cat_title][] = $tVal;
+            $tree[$tVal->sub_cat_title][] = $tVal;
         }
         return $tree;
     }
 
-    public function recordLink($link)
+    public function recordLink($link, $type='public')
     {
         $link = filter_var($link,FILTER_SANITIZE_STRING);
 
@@ -57,7 +72,7 @@ class Snippets extends Model
                 FROM snippets sp
                 LEFT JOIN Category ct ON (ct.id = sp.id_category)
                 LEFT JOIN Subcategory sct ON (sct.id = sp.id_sub_category)
-                WHERE sp.link='{$link}'";
+                WHERE sp.link='{$link}' and sp.type='{$type}'";
 
         return $this->db->query($SQL)->row("obj");
     }

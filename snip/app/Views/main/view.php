@@ -1,10 +1,10 @@
 <?php
 
+
 /**
  * @var object $record;
  */
 ?>
-
 
 <div class="box content_item">
     <div class="grid clear">
@@ -21,8 +21,8 @@
                     <?=$record->ithelp?>
                 </span>
                 <a href="#" style="text-align: center">-</a>
-                <a href="#">edit</a>
-                <a href="#">delete</a>
+                <a href="/edit/<?=$record->link?>">edit</a>
+                <a href="#" onclick="if(confirm('Delete this records?')){window.location='/delete/<?=$record->link?>';};">delete</a>
             </div>
         </div>
     </div>
