@@ -51,9 +51,9 @@ h5{
 
 }
 p{
-    text-indent: 15px;
+/*    text-indent: 15px;
     line-height: 20px;
-    padding-bottom: 10px;
+    padding-bottom: 10px;*/
 }
 
 blockquote{
@@ -103,7 +103,7 @@ input[type=text], input[type=password]:focus, select:focus, textarea:focus{
 
 /** HEADER */
 .logo{
-    color: #FFA468;
+    color: #FFC66D;
     text-decoration: none;
     text-shadow: 1px 1px 2px #111111;
 }
@@ -112,7 +112,7 @@ input[type=text], input[type=password]:focus, select:focus, textarea:focus{
 }
 
 .page{
-    width: 960px;
+    width: 1012px;
     margin: 0 auto;
 }
 
@@ -451,3 +451,61 @@ form.save_form input[type=submit]{
 .save_btn{
     text-align: right;
 }
+
+/*register form*/
+.register_form{
+    margin-left: 35%;
+    font-family: Consolas, "Courier New", Courier, monospace;
+}
+.register_form input{
+    width: 50%;
+    margin-bottom: 10px;
+}
+
+.register_form .register_form_after{
+    display: block;
+}
+
+/*Checked box*/
+.checked_user{
+    margin: 15px auto 25px;
+}
+.checked_user_box{
+    display: block;
+    width: 25px;
+    height: 25px;
+    border-right: 1px solid #797979;
+    border-bottom: 1px solid #797979;
+    background-color: #181818;
+}
+.checked_user_box_ok{
+    background-color: #FFC66D;
+}
+
+.checked_user_text{
+    line-height: 25px;
+}
+.reg_error_text{
+    color: #ff5900;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

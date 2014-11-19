@@ -210,4 +210,89 @@ class Component
             echo $view;
     }
 
+
+
+
+    /**
+     * Свойство передачи в вид или шаблон части вида
+     * Работет совместно с методом setChunk()
+     */
+    private static $chunk = [];
+
+    /**
+     *
+     * Обработка в указаном виде, переданых данных, результат будет передан в основной вид или тему по указаному $chunkName,
+     * также есть возможность вернуть результат в переменную указав четвертый параметр в true.
+     *
+     *<pre>
+     * Пример:
+     * $this->setChunk("topSidebar", "blog/topSidebar", array( "var" => "value" ));
+     *
+     * в вид blog/topSidebar.php передается  переменная $var с значением  "value".
+     *
+     * В необходимом месте основного вида или темы нужно обявить чанк
+     * напрямую:
+     * echo $this->chunk["topSidebar"];
+     * или методом:
+     * $this->chunk("topSidebar");
+     *</pre>
+     *
+     * @param string    $chunkName  зарегестрированое имя
+     * @param string    $chunkView  путь у виду чанка, установки путей к виду имеют следующие особености:
+     *                              	"partial/myview" сгенерирует "app/Views/partial/myview.php"
+     *                              	"//partial/myview" сгенерирует "app/partial/myview.php"
+     * @param array     $dataChunk  передача данных в вид чанка
+     * @param bool      $returned   по умочнию FALSE производится подключения в шаблон, если этот параметр TRUE возвращает контент
+     * @return string
+     */
+    public static function setChunk( $chunkName, $chunkView='', array $dataChunk=null, $returned=false )
+    {
+        // Если $chunkView передан как пустая строка, создается заглушка
+        if(empty($chunkView))
+            return self::$chunk[$chunkName] = '';
+        else if($chunkView===false || $chunkView === null)
+            $_chunkView = strtolower(Rec::$controller.'/'.Rec::$action);
+        else if(substr($chunkView,0,2) == '//')
+            $_chunkView = substr($chunkView,2);
+        else
+            $_chunkView = strtolower(Rec::$controller).'/'.$chunkView;
+
+        $resultChunk = Component::renderPartial($_chunkView, $dataChunk, true);
+
+        if(!$returned)
+            self::$chunk[$chunkName] = $resultChunk;
+        else
+            return $resultChunk;
+
+    }
+
+    /**
+     * Вызов зарегистрированного чанка. Первый аргумент имя зарегестрированого чанка
+     * второй тип возврата метода по умолчанию ECHO, если FALSE данные будет возвращены
+     *
+     * <pre>
+     * Пример:
+     *  $this->chunk("myChunk");
+     * </pre>
+     *
+     * @param  string    $chunkName
+     * @param  bool      $e
+     * @return bool
+     */
+    public static function chunk( $chunkName, $e=true )
+    {
+        if(isset(self::$chunk[$chunkName])){
+            if($e)
+                echo self::$chunk[$chunkName];
+            else
+                return self::$chunk[$chunkName];
+        }else{
+            if(Rec::$debug){
+                Rec::ExceptionError('ERROR Undefined chunk',$chunkName);
+            }else
+                return null;
+        }
+    }
+
+
 }

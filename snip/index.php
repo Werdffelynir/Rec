@@ -2,7 +2,8 @@
 define('DEBUG', true);
 define('START_TIMER', microtime(true));
 if(DEBUG){ ini_set("display_errors",1); error_reporting(E_ALL); }
-else{ ini_set("display_errors",0); }
+else{ ini_set("display_errors",0); error_reporting(0);}
+
 require_once('../rec/Rec.php');
 
 $R = new rec\Rec('app', DEBUG);
@@ -29,7 +30,7 @@ $R->setConf(
         'email'=>'werdffelynir@gmail.com',
         'off_links'=>
             [
-                'index','search','cat','subcat','snippet','edit','delete','create'
+                'index','search','cat','subcat','snippet','create','edit','save','delete'
             ]
     ]
 );
@@ -56,6 +57,7 @@ $R->urlAdd('Main/subcat', 'subcat/{p:link}/{n:page}');
 $R->urlAdd('Main/snippet', 'snippet/{p:link}');
 $R->urlAdd('Main/create', 'create');
 $R->urlAdd('Main/edit', 'edit/{p:link}');
+$R->urlAdd('Main/save', 'save/{p:id}');
 $R->urlAdd('Main/delete', 'delete/{p:link}');
 
 $R->run();

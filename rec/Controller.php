@@ -76,9 +76,9 @@ class Controller {
      * @param bool            $returned   по умолчанию возвращает результат
      * @return bool|string
      */
-    public function renderPartial($partial, array $data = array(), $returned=true)
+    public function renderPartial($partial='', array $data = array(), $returned=true)
     {
-        if(empty($partial))
+        if(!$partial)
             $this->partial = strtolower(Rec::$controller.'/'.Rec::$action);
         else if(substr($partial,0,2) == '//')
             $this->partial = substr($partial,2);
@@ -182,6 +182,19 @@ class Controller {
         return Rec::urlArg($param, $element);
     }
 
+
+
+    /**
+     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+     *                          A L I A S E S
+     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+     */
+
+
+    #
+    #   Request
+    #
+
     /**
      * Checked if ajax request
      * @return bool
@@ -266,4 +279,44 @@ class Controller {
     {
         return Request::deleteCookie($key, $domain, $path);
     }
-} 
+
+    #
+    #   Components
+    #
+/**/
+    public function hookRegister($event, $callback = null, array $params = array())
+    {
+        return Component::hookRegister($event,$callback,$params);
+    }
+
+    public function hookTrigger($event, array $params = array())
+    {
+        Component::hookTrigger($event,$params);
+    }
+
+    public function filterRegister($filterName, $callable, $acceptedArgs = 1)
+    {
+        Component::filterRegister($$filterName, $callable, $acceptedArgs);
+    }
+
+    public function filterTrigger($filterName, $args)
+    {
+        Component::filterTrigger($filterName, $args);
+    }
+
+    public function flash($key = null, $value = null, $keep = true)
+    {
+        return Component::flash($key, $value, $keep);
+    }
+
+    public function setChunk( $chunkName, $chunkView='', array $dataChunk=null, $returned=false )
+    {
+        return Component::setChunk($chunkName, $chunkView, $dataChunk, $returned);
+    }
+
+    public function chunk( $chunkName, $echo=true )
+    {
+        return Component::chunk($chunkName, $echo);
+    }
+}
+

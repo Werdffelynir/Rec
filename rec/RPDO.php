@@ -306,10 +306,18 @@ class RPDO
             $this->sql = $constructSql;
 
             self::$STH = self::$DBH->prepare($constructSql);
-            $resultUpdate = self::$STH->execute($dataValue);
+            if(self::$DBH && !self::$STH){
+                if(Rec::$debug)
+                    Rec::ExceptionError("Синтаксическая ошибка запроса",$constructSql);
+                return null;
+            }else{
 
-            return $resultUpdate;
+                $resultUpdate = self::$STH->execute($dataValue);
+                return $resultUpdate;
+            }
         } else {
+            if(Rec::$debug)
+                Rec::ExceptionError("Количество полей не соответствует количеству значений!");
             die("Количество полей не соответствует количеству значений!");
         }
     }

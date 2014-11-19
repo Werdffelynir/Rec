@@ -1,14 +1,20 @@
 <?php
 
 /**
+ *
  * @var array $formData
  * @var $userId
  */
 
 $snippet = $formData['snippet'];
+$flashMessages = \rec\Component::flash('save');
 ?>
 
-<form action="/edit/save/<?=$snippet['id']?>" method="post" class="save_form">
+<?if($flashMessages!=null):?>
+    <div class="box" style="text-align:center; margin-bottom: 5px; background-color: #3B3E41"><p><?=$flashMessages?></p></div>
+<?endif;?>
+
+<form action="/save/<?=$snippet['id']?>" method="post" class="save_form">
 
     <div class="content_left box grid-8 first">
 
@@ -62,11 +68,16 @@ $snippet = $formData['snippet'];
 
 <script type="application/javascript">
 
+    var snippetId = '<?=$snippet['id']?>';
     var selectCat = $('select[name=id_category]');
     var inputCat = $('input[name=new_category]');
     var selectSubCat = $('select[name=id_sub_category]');
     var inputSubCat = $('input[name=new_sub_category]');
     var subCatData = $.parseJSON('<?=$formData['subcategories']?>');
+
+    if(snippetId != "" || snippetId != null){
+        inputCat.css('display', 'block');
+    }
 
     //for update
     var hideSubCat = parseInt($('input[name=hide_id_sub_category]').val());

@@ -16,6 +16,7 @@ function actMenu($link){
     <div class="box_menu">
         <a href="#">Public</a>
         <a href="#">Private</a>
+        <a href="#">Favorites</a>
     </div>
 </div>
 

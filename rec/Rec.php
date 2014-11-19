@@ -500,4 +500,5 @@ class Rec
                 self::ExceptionError('File not exists', $pathFile);
     }
 
+
 }

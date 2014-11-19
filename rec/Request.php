@@ -229,6 +229,16 @@ class Request {
         }
     }
 
+    public static function flashMessage($name, $value=null, $afterDeleted=true)
+    {
+        if($value!=null) {
+
+        }else{
+
+        }
+
+    }
+
 
     protected static $headerCodes = array(
         // Informational 1xx

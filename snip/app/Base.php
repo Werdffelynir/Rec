@@ -33,10 +33,15 @@ class Base extends Controller
     /**LOGIN
      * *********************  *********************  *********************
      */
-    public function acLogin()
+    public function acLogin($_login=null,$_password=null,$redirect=true)
     {
         $login = $this->post('login');
         $password = hash("md5",$this->post('password'));
+
+        if(!empty($_login) && !empty($_password)){
+            $login = $_login;
+            $password = $_password;
+        }
 
         $usersModel = new Users();
         $userData = $usersModel->db->getByAttr('login',$login,null,"and password='{$password}'");
@@ -54,7 +59,8 @@ class Base extends Controller
             $this->auth = $userData['role'];
             $this->cookie('auth', serialize($userPublicData));
         }
-        $this->redirect();
+        if($redirect)
+            $this->redirect();
     }
     public function acLogout()
     {
