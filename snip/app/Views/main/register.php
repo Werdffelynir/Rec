@@ -103,7 +103,7 @@
                 url:'/register',
                 success:function(data){
                     if(data == 'success'){
-                        console.log('redirect');
+                        document.location = '/';
                     }else
                         $('.reg_error_text').html('Error, this email is registered!');
                 }

@@ -40,7 +40,7 @@ class Base extends Controller
 
         if(!empty($_login) && !empty($_password)){
             $login = $_login;
-            $password = $_password;
+            $password = hash("md5",$_password);
         }
 
         $usersModel = new Users();
