@@ -73,8 +73,15 @@ $(document).ready(function () {
     });
      */
 
-    $('.on_btn_login').click(function(event){
+    $('.on_btn_login').click(function(e){
         $('.login_box').fadeToggle(150);
+    });
+    $('.login_box form').submit(function(e){
+        var email =  $('.login_box form input[name=login]').value;
+        var password =  $('.login_box form input[name=password]').value;
+        if(email.length < 3 || password.length < 3){
+            e.preventDefault();
+        }
     });
 
 });

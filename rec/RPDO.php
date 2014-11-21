@@ -197,15 +197,15 @@ class RPDO
      * Обертка INSERT
      * <pre>
      * ->insert(
-     *      array("title","link","content","datetime","author"),
-     *      array(
+     *      ["title","link","content","datetime","author"],
+     *      [
      *          'title'     =>'SOME TITLE',
      *          'link'      =>'SOME LINK',
      *          'content'   =>'SOME CONTENT',
      *          'datetime'  =>'SOME DATETIME',
      *          'author'    =>'SOME AUTHOR',
-     *      ));
-     * С генерирует SQL запрос:
+     *      ]);
+     * Сгенерирует SQL запрос:
      * "INSERT INTO table (title,link,content,datetime,author)
      *      VALUES (:title,:link,:content,:datetime,:author)"
      * и подставит необходимые значения.
@@ -215,7 +215,7 @@ class RPDO
      * @param array $dataValue - Массив значений для установленных $dataColumn
      * @return bool
      */
-    public function insert(array $dataColumn, array $dataValue)
+    public function insertWrapper(array $dataColumn, array $dataValue)
     {
         $table = $this->table;
 
@@ -244,11 +244,11 @@ class RPDO
      * Обертка UPDATE
      *
      * <pre>
-     * ->update( array('column'),array('data'), 'id=50' || array('id=:id', array('id'=>50)) );
+     * ->update( ['column']['data'], 'id=50' || ['id=:id', ['id'=>50]] );
      *
      * ->update(
-     *      array("type","link","category","title","content","datetime","author"),
-     *      array(
+     *      ["type","link","category","title","content","datetime","author"],
+     *      [
      *          'type'     =>'SOME DATA TITLE',
      *          'link'     =>'SOME DATA LINK',
      *          'category' =>'SOME DATA CATEGORY',
@@ -256,13 +256,13 @@ class RPDO
      *          'content'  =>'SOME DATA CONTENT',
      *          'datetime' =>'SOME DATA TIME',
      *          'author'   =>'SOME DATA AUTHOR',
-     *          ),
+     *      ],
      *      "id=13"
      *  );
      *
      * ->update(
-     *      array("type","link","category","title","content","datetime","author"),
-     *      array(
+     *      ["type","link","category","title","content","datetime","author"],
+     *      [
      *          'type'     =>'SOME DATA TITLE',
      *          'link'     =>'SOME DATA LINK',
      *          'category' =>'SOME DATA CATEGORY',
@@ -270,8 +270,8 @@ class RPDO
      *          'content'  =>'SOME DATA CONTENT',
      *          'datetime' =>'SOME DATA TIME',
      *          'author'   =>'SOME DATA AUTHOR',
-     *      ),
-     *      array("id=:updId AND title=:updTitle", array('updId'=>13, 'updTitle'=>'SOME TITLE'))
+     *      ],
+     *      ["id=:updId AND title=:updTitle", ['updId'=>13, 'updTitle'=>'SOME TITLE']]
      *  );
      * Сгенерирует: "UPDATE pages SET title=:title, type=:type, link=:link, category=:category, subcategory=:subcategory, content=:content, datetime=:datetime WHERE id=:updId AND title=:updTitle;"
      * </pre>
@@ -281,7 +281,7 @@ class RPDO
      * @param $where - определение, строка НЕ безопасно "id=$id", или безопасный вариант array( "id=:updId", array('updId'=>$id))
      * @return bool
      */
-    public function update(array $dataColumn, array $dataValue, $where = null)
+    public function updateWrapper(array $dataColumn, array $dataValue, $where)
     {
         $table = $this->table;
 
@@ -311,7 +311,6 @@ class RPDO
                     Rec::ExceptionError("Синтаксическая ошибка запроса",$constructSql);
                 return null;
             }else{
-
                 $resultUpdate = self::$STH->execute($dataValue);
                 return $resultUpdate;
             }
@@ -324,27 +323,157 @@ class RPDO
 
 
     /**
+     * Обертка UPDATE
+     *
+     * <pre>
+     * Пример:
+     *
+     * $data = [
+     *  'link'=>'some value link',
+     *  'title'=>'some value title',
+     *  'content'=>'some value content',
+     * ];
+     *
+     * $dataWhere = ['id=:id', ['id'=>$idUpdate] ];
+     *
+     * $dataWhere = 'id>10';
+     *
+     * $result = $model->db->update($data, $updWhere);
+     *
+     * </pre>
+     *
+     * @param array $dataColumn
+     * @param $where
+     * @return bool|null
+     */
+    public function update(array $dataColumn, $where)
+    {
+        $table = $this->table;
+        $constructSql = "UPDATE " . $table . " SET ";
+        $binds = [];
+
+        if(isset($dataColumn[$this->primaryKey]))
+            unset($dataColumn[$this->primaryKey]);
+
+        $iter=0;
+        foreach($dataColumn as $keyData=>$valData)
+        {
+            if ($iter < count($dataColumn) - 1) {
+                $constructSql .= $keyData . "=:" . $keyData . ", ";
+            } else {
+                $constructSql .= $keyData . "=:" . $keyData . " ";
+            }
+            $binds[$keyData]=$valData;
+            $iter++;
+        }
+
+        if (is_string($where)) {
+            $constructSql .= " WHERE " . $where;
+        } elseif (is_array($where) AND is_array($where[1])) {
+            $constructSql .= " WHERE " . $where[0];
+            $binds = array_merge($binds, $where[1]);
+        }
+
+        $this->sql = $constructSql;
+
+        self::$STH = self::$DBH->prepare($constructSql);
+        if(self::$DBH && !self::$STH){
+            if(Rec::$debug)
+                Rec::ExceptionError("Синтаксическая ошибка запроса",'SQL:'.$constructSql .'<br>Bind:<pre>'.print_r($binds,true).'</pre>');
+            return null;
+        }else{
+            $resultUpdate = self::$STH->execute($binds);
+            return $resultUpdate;
+        }
+    }
+
+
+    /**
+     * Обертка Insert
+     *
+     * <pre>
+     * Пример:
+     *
+     * $data = [
+     *  'link'=>'some value link',
+     *  'title'=>'some value title',
+     *  'content'=>'some value content',
+     * ];
+     * $result = $model->db->insert($data);
+     *
+     * </pre>
+     *
+     * @param array $dataColumn
+     * @return bool|null|string
+     */
+    public function insert(array $dataColumn)
+    {
+        $table = $this->table;
+
+        if(isset($dataColumn[$this->primaryKey]))
+            unset($dataColumn[$this->primaryKey]);
+
+        $binds = array_keys($dataColumn);
+        $values = array_values($dataColumn);
+
+        $constructSql = "INSERT INTO " . $table . " (";
+        $constructSql .= implode(", ", $binds);
+        $constructSql .= ") VALUES (";
+        $constructSql .= ':' . implode(", :", $binds);
+        $constructSql .= ")";
+
+        $this->sql = $constructSql;
+
+        self::$STH = self::$DBH->prepare($constructSql);
+        if(self::$DBH && !self::$STH){
+            if(Rec::$debug)
+                Rec::ExceptionError("Синтаксическая ошибка запроса",'SQL:'.$constructSql .'<br>Bind:<pre>'.print_r($binds,true).'</pre>');
+            return null;
+        }else{
+            $resultInsert = self::$STH->execute($dataColumn);
+            if($resultInsert)
+                return self::$DBH->lastInsertId();
+            else
+                return $resultInsert;
+        }
+    }
+
+
+    /**
      * Обертка DELETE
      *
      * <pre>
      * Например:
-     * ->delete('key=val' || ['key=:key',['key'=>val]];
+     *
+     * ->delete( 'key=val' || ['key=:key',['key'=>val]] );
+     *
+     * ->delete(15);
+     *
      * ->delete('id=21');
-     * ->delete( ['id=:id', ['id'=>'21']]);
+     *
+     * ->delete(['id=:id',['id'=>21]]);
+     *
      * </pre>
      *
      * @param string $where    Часть запроса SQL where
      * @return mixed
      */
-    public function delete($where = null)
+    public function delete($where)
     {
         $table = $this->table;
         $dataValue = null;
         $constructSql = "DELETE FROM " . $table;
 
-        if (is_string($where)) {
+        if (is_numeric($where))
+        {
+            $constructSql .= " WHERE " . $this->primaryKey.'='.$where;
+        }
+        elseif (is_string($where))
+        {
             $constructSql .= " WHERE " . $where;
-        } elseif (is_array($where) AND is_array($where[1])) {
+        }
+        elseif (is_array($where) AND is_array($where[1]))
+        {
             $constructSql .= " WHERE " . $where[0];
             $dataValue = $where[1];
         }
@@ -371,7 +500,7 @@ class RPDO
 
 
     /**
-     * Выбирает все записи с указанной таблицы.
+     * Выбирает все записи
      * Если указан второй аргумент выбирает только те поля что вказаны в нем
      *
      * <pre>
@@ -381,13 +510,9 @@ class RPDO
      *
      * ->getAll("title, content, author");
      *
-     * ->getAll(array(
-     *      "title",
-     *      "content",
-     *      "author"
-     * ));
+     * ->getAll(["title", "content", "author"]);
      *
-     * ->getAll(null, "category='some' and visibly=1");
+     * ->getAll("*", "category='some' and visibly=1");
      *
      * </pre>
      *
@@ -427,11 +552,7 @@ class RPDO
      *
      * ->getById(215, "title, content, author");
      *
-     * ->getById(215, array(
-     *      "title",
-     *      "content",
-     *      "author"
-     * ));
+     * ->getById(215, ["title","content","author"]);
      *
      * </pre>
      * @param number        $id       id записи
@@ -469,13 +590,9 @@ class RPDO
      *
      * ->getByAttr("column", "column_value", "title, content, author");
      *
-     * ->getByAttr("column", "column_value", array(
-     *      "title",
-     *      "content",
-     *      "author"
-     * ));
+     * ->getByAttr("column", "column_value", ["title","content","author"]);
      *
-     * ->getByAttr("column", "column_value", null, "AND link='my_link'");
+     * ->getByAttr("column", "column_value", null, "link='my_link'");
      *
      * </pre>
      *
@@ -488,7 +605,7 @@ class RPDO
     public function getByAttr($attr, $attrVal, $select = null, $andWhere=null)
     {
         $table = $this->table;
-        $setWhere = ($andWhere!=null) ? $andWhere : '';
+        $setWhere = ($andWhere!=null) ? ' AND '.$andWhere : '';
 
         $sql = '';
         if ($select == null) {

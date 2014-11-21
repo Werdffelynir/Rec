@@ -35,9 +35,9 @@ use rec\Rec;
                     <div class="right_title simple_btn on_btn_login">Login</div>
                     <div class="login_box box">
                         <form action="/login" method="post">
-                            <input name="login" type="text" value="werdffelynir@gmail.com" placeholder="Email" autocomplete="off" />
-                            <input name="password" type="password" value="werd000666" placeholder="Password" autocomplete="off"/>
-                            <input type="submit" class="simple_btn"  value="save me" />
+                            <input name="login" type="text" value="werdffelynir@gmail.com" placeholder="email@address" autocomplete="off" />
+                            <input name="password" type="password" value="werd000666" placeholder="password" autocomplete="off"/>
+                            <input type="submit" class="simple_btn"  value="Login" />
                         </form>
                     </div>
                 <?php endif; ?>

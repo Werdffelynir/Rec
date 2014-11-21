@@ -2,107 +2,113 @@
 
 namespace app;
 
+use app\Controllers\UserControl;
+use app\Controllers\Records;
 use \rec\Rec;
 use \rec\Controller;
 use \app\Models\Category;
-use \app\Models\Users;
 
 class Base extends Controller
 {
     public $title;
     public $auth = false;
-    public $authData = null;
+    public $userData = null;
+
+    /** @var UserControl $UserControl*/
+    public $UserControl;
+    /** @var Records $Records*/
+    public $Records;
 
     public $categories = [];
+    public $categoriesUsers = [];
     public $subcategory = [];
-
 
     public function init()
     {
         $this->title = Rec::$applicationName;
 
-        # check user is login
-        $this->checkLogin();
+        # Контроль пользователей
+        $this->UserControl = new UserControl();
+        $this->auth = $this->UserControl->auth;
+        $this->userData = $this->UserControl->userData;
+
+
+        # Контроль записей
+        $this->Records = new Records($this->userData);
 
         # partial views
         $this->activeCategory();
-
     }
 
 
-    /**LOGIN
-     * *********************  *********************  *********************
-     */
-    public function acLogin($_login=null,$_password=null,$redirect=true)
+    # Authorization actions
+    # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    public function actionLogin($login='',$password='',$redirect=true)
     {
-        $login = $this->post('login');
-        $password = hash("md5",$this->post('password'));
-
-        if(!empty($_login) && !empty($_password)){
-            $login = $_login;
-            $password = hash("md5",$_password);
+        if(empty($login) && empty($password))
+        {
+            $login = $this->post('login');
+            $password = $this->post('password');
         }
 
-        $usersModel = new Users();
-        $userData = $usersModel->db->getByAttr('login',$login,null,"and password='{$password}'");
+        $this->UserControl->login($login, $password);
 
-        if(!empty($userData)){
-            $userPublicData = [
-                'id'=>$userData['id'],
-                'login'=>$userData['login'],
-                'name'=>$userData['name'],
-                'email'=>$userData['email'],
-                'date_create'=>$userData['date_create'],
-                'role'=>$userData['role'],
-            ];
-            $this->authData = $userPublicData;
-            $this->auth = $userData['role'];
-            $this->cookie('auth', serialize($userPublicData));
-        }
         if($redirect)
             $this->redirect();
     }
-    public function acLogout()
+
+    public function actionLogout()
     {
-        $this->auth = false;
-        $this->authData = [];
-        $this->deleteCookie('auth');
+        $this->UserControl->logout();
         $this->redirect();
     }
-    public function checkLogin()
-    {
-        $userPublicData =  $this->cookie('auth');
-        if(!$this->auth && !empty($userPublicData)){
-            $userPublicData = unserialize($userPublicData);
-
-            $usersModel = new Users();
-            $userData = $usersModel->db->getByAttr('login',$userPublicData['login'],null,"and date_create='{$userPublicData['date_create']}' and role='{$userPublicData['role']}'");
-            if(!empty($userData)){
-                $this->auth = $userData['role'];
-                $this->authData = $userData;
-            }
-        }
-    }
 
 
-    /** COMMON VIEWS PARTS
-     * *********************  *********************  *********************
-     */
+
+    # Common views parts
+    # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     public function activeCategory()
     {
-        $this->categories = Category::model()->db->getAll(null, 'visibly=1');
+        $this->categories = Category::model()->db->getAll(null, "visibly=1 and type='public'");
+
+        if($this->auth){
+            $this->categoriesUsers = Category::model()->db->getAll(null, "visibly=1 and id_user='".$this->UserControl->id."'");
+        }
+
     }
+
     public function viewCategory()
     {
         $this->renderPartial('//layout/menuCategory',
             [
-                'categories'=>$this->categories
+                'categories'=>$this->categories,
+                'categoriesUsers'=>$this->categoriesUsers,
+                'auth'=>$this->auth,
+                'authData'=>$this->UserControl->userData,
             ],
             false);
     }
 
 
-    /**
-     * *********************  *********************  *********************
-     */
+    public function userSidebar()
+    {
+        $htmlData = '';
+        $htmlData .= $this->renderPartial('//main/user', [
+                'auth'=>$this->auth,
+                'userData'=>$this->UserControl->userData,
+            ]);
+        $htmlData .= $this->renderPartial('//main/services', [
+                'auth'=>$this->auth
+            ]);
+        return $htmlData;
+    }
+
+
+    public function snippetsTreeSidebar()
+    {
+
+    }
+
+
 }

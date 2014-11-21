@@ -6,7 +6,8 @@
  */
 
 ?>
-<form method="post" class="register_form">
+
+<form name="register" method="post" class="register_form" enctype="multipart/form-data">
 
         <div class="edit">
 
@@ -22,6 +23,31 @@
             <p>Password again</p>
             <input name="password_again" type="text" value="" placeholder="Search tags" />
 
+            <p class="additional_settings_show">Additional settings</p>
+            <div class="additional_settings grid clear">
+                <p>Profession</p>
+                <select name="profession">
+                    <option value="Junior" selected>Junior</option>
+                    <option value="Web developer">Web developer</option>
+                    <option value="PHP developer">PHP developer</option>
+                    <option value="JS developer">JS developer</option>
+                    <option value="AS developer">AS developer</option>
+                    <option value="Programmer">Programmer</option>
+                    <option value="Frontend">Frontend</option>
+                    <option value="Backend">Backend</option>
+                </select>
+
+                <p>Avatar</p>
+                <div class="file_upload">
+                    <span class="simple_btn">select</span>
+                    <div>not photo </div>
+                    <input name="ava" type="file">
+                </div>
+
+                <br><p>Programming Languages</p>
+                <textarea name="code_lang"></textarea>
+            </div>
+
             <div class="checked_user grid clear">
                 <div class="checked_user_box grid-1 first"></div>
                 <div class="checked_user_text grid-11">you're a human?</div>
@@ -29,7 +55,6 @@
 
             <input type="submit" value="Register" class="simple_btn">
             <span class="reg_error_text"></span>
-            <!--<div class="simple_btn">Register</div>-->
         </div>
 
 </form>
@@ -57,28 +82,19 @@
         isChecked = uBox.hasClass('checked_user_box_ok');
     });
 
+    $('.additional_settings_show').click(function(){
+        $('.additional_settings').slideToggle();
+    });
+
     $('.register_form').submit(function(e){
         e.preventDefault();
         $('.reg_error_text').html('');
         var field = '';
 
-/*
-        var inputs = $('.register_form input[type=text]');
-        for (var i=0; i<inputs.length; i++)
-            if(inputs[i].value.length < 3){
-                isChecked = false;
-            }
-
-*/
-
         var fn =  $('.register_form input[name=full_name]').val();
         var em =  $('.register_form input[name=email]').val();
         var p1 =  $('.register_form input[name=password]').val();
         var p2 =  $('.register_form input[name=password_again]').val();
-
-        if (!isChecked){
-            field += ' You bot? ';
-        }
 
         if(fn.length < 3){
             isChecked = false;
@@ -91,17 +107,27 @@
             field += ' Email.';
         }
 
-        if(p1 != p2 || p2 == ""){
+        if(p1 != p2 || p2 == "" || p1.length < 3){
             isChecked = false;
             field += ' Passwords.';
         }
 
+        if (!isChecked){
+            field += ' You bot? ';
+        }
+
+        var formReg = document.forms.register;
+        var formData = new FormData(formReg);
         if (isChecked){
             $.ajax({
                 type:'post',
-                data: $('.register_form').serialize(),
+                data: formData,
                 url:'/register',
-                success:function(data){
+                cache: false,
+                contentType: false,
+                processData: false,
+                success:function(data) {
+                    console.log(data);
                     if(data == 'success'){
                         document.location = '/';
                     }else

@@ -29,6 +29,7 @@ class Edit extends Controller
     {
         $subCategories = [];
         $_subCategories = $this->modelSubcategory->db->getAll(null,"visibly=1 and type='public'");
+
         foreach ($_subCategories as $sc) {
             $_sc['id'] = $sc['id'];
             $_sc['title'] = $sc['title'];
@@ -71,14 +72,14 @@ class Edit extends Controller
                 $categoryLink = $this->modelCategory->db->lastId().'_'.$categoryLink;
 
             $resultInsCat = $this->modelCategory->db->insert(
-                ["id_user","title","link","type","datecreate"],
                 [
                     'id_user'=>$data['id_user'],
                     'title'=>$newCategory,
                     'link'=>$categoryLink,
                     'type'=>'public',
                     'datecreate'=>date("d.m.Y H:i:s"),
-                ]);
+                ]
+            );
             $data['id_category'] = $resultInsCat;
         }else{
             $data['id_category'] = $idCategory;
@@ -92,7 +93,6 @@ class Edit extends Controller
                 $subCategoryLink = $this->modelSubcategory->db->lastId().'_'.$subCategoryLink;
 
             $resultInsSubCat = $this->modelSubcategory->db->insert(
-                ["id_category","id_user","title","link","type","datecreate"],
                 [
                     'id_category' => $data['id_category'],
                     'id_user' => $data['id_user'],
@@ -110,7 +110,6 @@ class Edit extends Controller
         {
             if(is_numeric($updateId)){
                 $resultInsSnippet = $this->modelSnippets->db->update(
-                    ["id_category","id_sub_category","id_user","title","content","tags","type","datecreate"],
                     [
                         'id_category' => $data['id_category'],
                         'id_sub_category' => $data['id_sub_category'],
@@ -130,7 +129,6 @@ class Edit extends Controller
 
                 $snippetLink = 's'.$this->modelSnippets->db->lastId().'_'.$this->createLink($data['title']);
                 $resultInsSnippet = $this->modelSnippets->db->insert(
-                    ["id_category","id_sub_category","id_user","link","title","content","tags","type","datecreate"],
                     [
                         'id_category' => $data['id_category'],
                         'id_sub_category' => $data['id_sub_category'],
@@ -176,7 +174,5 @@ class Edit extends Controller
         shuffle($word);
         return substr(implode($word), 0, $len);
     }
-
-
 
 }

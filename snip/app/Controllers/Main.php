@@ -13,9 +13,9 @@ class Main extends Base
     public function actions()
     {
         return [
-            'acLogin'=>'login',
-            'acLogout'=>'logout',
-            'acRegister'=>'register',
+            'actionLogin'=>'login',
+            'actionLogout'=>'logout',
+            'actionRegister'=>'register',
         ];
     }
 
@@ -23,49 +23,28 @@ class Main extends Base
     {
         $this->render('index', [
             'contentLeft'=> null,
-            'contentRight'=> null,
+            'contentRight'=> $this->userSidebar(),
         ]);
     }
 
     public function acRegister()
     {
+        if($this->auth)
+            $this->redirect('index');
 
         if($this->isAjax())
         {
-            $firstName = $this->post('full_name');
-            $email = $this->post('email');
-            $password1 = $this->post('password');
-            $password2 = $this->post('password_again');
-
-            if(!empty($firstName) && !empty($email) && !empty($password1) && !empty($password2) && $password1 == $password2){
-                $usersModel = new Users();
-                $checkEmail = $usersModel->db->getByAttr('email',$email);
-                if($checkEmail){
-                    echo 'error';
-                }else{
-                    $hashPassWord = hash("md5", $password1);
-                    $resultInsert = $usersModel->db->insert(
-                        ['login','password','name','email','date_create','role'],
-                        [
-                            'login'=>$email,
-                            'password'=>$hashPassWord,
-                            'name'=>$firstName,
-                            'email'=>$email,
-                            'date_create'=>date("d.m.Y H:i:s"),
-                            'role'=>'1',
-
-                        ]);
-                    if($resultInsert){
-                        $this->acLogin($email,$password1,false);
-                        echo 'success';
-                    }
-                }
+            $usersModel = new Users();
+            $result = $usersModel->registerUser($_POST);
+            if($result){
+                $this->actionLogin($result['email'],$result['password'],false);
+                echo 'success';
             }
             exit;
         }
 
         $this->render('index', [
-            'contentLeft'=> $this->renderPartial('register'),
+            'contentLeft'=> $this->renderPartial('register',['auth'=> $this->auth,]),
             'contentRight'=> null,
         ]);
     }
