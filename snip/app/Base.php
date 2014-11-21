@@ -68,6 +68,22 @@ class Base extends Controller
 
     # Common views parts
     # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    public function viewCategory()
+    {
+        $publicCategory = $this->Records->publicCategory();
+        $privateCategory = $this->Records->privateCategory();
+
+        $this->renderPartial('//layout/menuCategory',
+            [
+                'auth'=>$this->auth,
+                'userData'=>$this->UserControl->userData,
+                'publicCategory'=>$publicCategory,
+                'privateCategory'=>$privateCategory,
+            ],
+            false);
+    }
+
     public function activeCategory()
     {
         $this->categories = Category::model()->db->getAll(null, "visibly=1 and type='public'");
@@ -78,17 +94,6 @@ class Base extends Controller
 
     }
 
-    public function viewCategory()
-    {
-        $this->renderPartial('//layout/menuCategory',
-            [
-                'categories'=>$this->categories,
-                'categoriesUsers'=>$this->categoriesUsers,
-                'auth'=>$this->auth,
-                'authData'=>$this->UserControl->userData,
-            ],
-            false);
-    }
 
 
     public function userSidebar()

@@ -2,12 +2,11 @@
 
 /**
  * @var $auth
- * @var $authData
- * @var $categories
- * @var $categoriesUsers
+ * @var $userData
+ * @var $publicCategory
+ * @var $privateCategory
  */
 
-// if($auth)
 ?>
 
 <div class="grid clear">
@@ -16,23 +15,19 @@
 
         <div class="public_snippets_box">
             <ul>
-                <?php foreach ($categories as $c): ?>
-                <li>
-                    <a href="/cat/<?= $c['link']?>"><?= $c['title']?></a></li>
-                <li>
-                    <?php endforeach; ?>
-                <li><li>
+                <?php foreach ($publicCategory as $pub_c): ?>
+                    <li><a href="/cat/<?= $pub_c['link']?>"><?= $pub_c['title']?></a></li>
+                <?php endforeach; ?>
+                <li></li>
             </ul>
         </div>
 
         <div class="private_snippets_box" style="display: none;">
             <ul>
-                <?php foreach ($categoriesUsers as $cu): ?>
-                <li>
-                    <a href="/cat/<?= $cu['link']?>"><?= $cu['title']?> pr</a></li>
-                <li>
-                    <?php endforeach; ?>
-                <li><li>
+                <?php foreach ($privateCategory as $prv_c): ?>
+                    <li><a href="/private/cat/<?= $prv_c['link']?>"><?= $prv_c['title']?></a></li>
+                <?php endforeach; ?>
+                <li></li>
             </ul>
         </div>
 
@@ -45,15 +40,16 @@
     <?php endif;?>
 
 </div>
-
 <script>
+    var cookieToggleCategory = $.cookie('toggle_category');
     var isAuth = '<?=$auth?>';
-    var isPublic = true;
     var toggleCat = $('.toggle_cat');
     var publicBox = $('.public_snippets_box');
     var privateBox = $('.private_snippets_box');
+    var isPublic = true;
 
     toggleCat.click(function(){
+
         if(parseInt(isAuth)>=1){
 
             if(isPublic){
@@ -61,14 +57,21 @@
                 privateBox.css('display','block');
                 toggleCat.text('Public');
                 isPublic=false;
+                $.cookie('toggle_category', '0', {path: '/', domain: '<?=\rec\Rec::$urlDomain?>'});
             }else{
                 publicBox.css('display','block');
                 privateBox.css('display','none');
                 toggleCat.text('Private');
                 isPublic=true;
+                $.cookie('toggle_category', '1', {path: '/', domain: '<?=\rec\Rec::$urlDomain?>'});
             }
         }
     });
+
+    if(cookieToggleCategory == '0'){
+        toggleCat.trigger('click');
+    }
+
 </script>
 
 

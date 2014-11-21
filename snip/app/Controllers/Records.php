@@ -9,6 +9,8 @@ use rec\Controller;
 
 class Records extends Controller
 {
+    public $auth = false;
+    private $userId;
     private $userData;
     private $modelSnippets;
     private $modelCategory;
@@ -18,7 +20,12 @@ class Records extends Controller
     {
         parent::__construct();
 
-        $this->userData = $userData;
+        if($userData){
+            $this->auth = true;
+            $this->userId = $userData['id'];
+            $this->userData = $userData;
+        }
+
         $this->modelSnippets = new Snippets();
         $this->modelCategory = new Category();
         $this->modelSubcategory = new Subcategory();
@@ -33,7 +40,7 @@ class Records extends Controller
 
     public function publicCategory()
     {
-        return $this->modelCategory->db->getAll("*", "visibly=1 and type='public'");
+        return $this->modelCategory->db->getAll("*", "visibly=1 and type='public' and id_user=0");
     }
 
     public function publicSubcategory($category = null)
@@ -48,19 +55,32 @@ class Records extends Controller
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    public function privateSnippets()
-    {
-        return $this->modelSubcategory->db->getAll("*", "visibly=1 and type='public'");
-    }
 
     public function privateCategory()
     {
-        return $this->modelCategory->db->getAll("*", "visibly=1 and type='private' and id_user=" . $this->id);
+        if($this->auth){
+            return $this->modelCategory->db->getAll("*", "visibly=1 and id_user=" . $this->userId);
+        }else{
+            return [];
+        }
     }
 
     public function privateSubcategory()
     {
+        if($this->auth){
+            return '';
+        }else{
+            return false;
+        }
+    }
 
+    public function privateSnippets()
+    {
+        if($this->auth){
+            return $this->modelSubcategory->db->getAll("*", "visibly=1 and type='public'");
+        }else{
+            return false;
+        }
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
