@@ -6,26 +6,27 @@
  */
 
 ?>
-
+<h2>Register space</h2>
 <form name="register" method="post" class="register_form" enctype="multipart/form-data">
 
         <div class="edit">
 
             <p>Full Name</p>
-            <input name="full_name" type="text" value="" placeholder="Search tags" />
+            <input name="full_name" type="text" value="" placeholder="Full Name" />
 
             <p>Email</p>
-            <input name="email" type="text" value="" placeholder="Search tags" />
+            <input name="email" type="text" value="" placeholder="Email" />
 
             <p>Password</p>
-            <input name="password" type="text" value="" placeholder="Search tags" />
+            <input name="password" type="text" value="" placeholder="Password" />
 
             <p>Password again</p>
-            <input name="password_again" type="text" value="" placeholder="Search tags" />
+            <input name="password_again" type="text" value="" placeholder="Password again" />
 
             <p class="additional_settings_show">Additional settings</p>
+
             <div class="additional_settings grid clear">
-                <p>Profession</p>
+                <p>Specialize</p>
                 <select name="profession">
                     <option value="Junior" selected>Junior</option>
                     <option value="Web developer">Web developer</option>
@@ -37,10 +38,10 @@
                     <option value="Backend">Backend</option>
                 </select>
 
-                <p>Avatar</p>
+                <p>&nbsp;</p>
                 <div class="file_upload">
                     <span class="simple_btn">select</span>
-                    <div>not photo </div>
+                    <div>Avatar </div>
                     <input name="ava" type="file">
                 </div>
 
@@ -49,8 +50,8 @@
             </div>
 
             <div class="checked_user grid clear">
-                <div class="checked_user_box grid-1 first"></div>
-                <div class="checked_user_text grid-11">you're a human?</div>
+                <div class="checked_user_box grid_1 first"></div>
+                <div class="checked_user_text grid_11"> &nbsp;you're a human?</div>
             </div>
 
             <input type="submit" value="Register" class="simple_btn">

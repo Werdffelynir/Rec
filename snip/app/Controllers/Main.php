@@ -4,8 +4,6 @@ namespace app\Controllers;
 
 use \app\Base;
 use app\Models\Snippets;
-use app\Models\Users;
-use rec\Rec;
 
 class Main extends Base
 {
@@ -13,47 +11,25 @@ class Main extends Base
     public function actions()
     {
         return [
-            'actionLogin'=>'login',
-            'actionLogout'=>'logout',
-            'actionRegister'=>'register',
+            'actionLogin' => 'login',
+            'actionLogout' => 'logout',
+            'actionRegister' => 'register',
         ];
     }
 
     public function index()
     {
         $this->render('index', [
-            'contentLeft'=> null,
-            'contentRight'=> $this->userSidebar(),
-        ]);
-    }
-
-    public function acRegister()
-    {
-        if($this->auth)
-            $this->redirect('index');
-
-        if($this->isAjax())
-        {
-            $usersModel = new Users();
-            $result = $usersModel->registerUser($_POST);
-            if($result){
-                $this->actionLogin($result['email'],$result['password'],false);
-                echo 'success';
-            }
-            exit;
-        }
-
-        $this->render('index', [
-            'contentLeft'=> $this->renderPartial('register',['auth'=> $this->auth,]),
-            'contentRight'=> null,
+            'contentLeft' => null,
+            'contentRight' => $this->userSidebar(),
         ]);
     }
 
     public function search($words)
     {
         $this->render('index', [
-            'contentLeft'=> null,
-            'contentRight'=> null,
+            'contentLeft' => null,
+            'contentRight' => null,
         ]);
     }
 
@@ -66,47 +42,59 @@ class Main extends Base
      * @param $link
      * @param int $page
      */
-    public function cat($link,$page=1)
+    public function cat($link, $page = 1)
     {
-        $snipModel = new Snippets();
-        $allRecords = $snipModel->allByCategoryLink($link);
-        $treeRecords = $snipModel->treeCategoryLink($link);
+        $allRecords = $this->modelSnippets->allByCategoryLink($link, 'public');
 
         $this->render('index', [
-            'contentLeft'=> $this->renderPartial('items', ['allRecords'=>$allRecords]),
-            'contentRight'=> $this->renderPartial('tree', ['treeRecords'=>$treeRecords]),
+            'contentLeft' => $this->renderPartial('items', ['allRecords' => $allRecords]),
+            'contentRight' => $this->viewTree($link),
         ]);
     }
 
-    public function subcat($link,$page=1)
+    public function subcat($link, $page = 1)
     {
 
     }
 
-    public function snippet($link,$page=1)
+    public function snippet($link, $page = 1)
     {
-        $snipModel = new Snippets();
-        $record = $snipModel->recordLink($link);
-        $treeRecords = $snipModel->treeCategoryLink($record->cat_link);
+        $record = $this->modelSnippets->recordLink($link);
 
         $this->render('index', [
-            'contentLeft'=> $this->renderPartial('view', ['record'=>$record]),
-            'contentRight'=> $this->renderPartial('tree', ['treeRecords'=>$treeRecords]),
+            'contentLeft' => $this->renderPartial('view', ['record' => $record]),
+            'contentRight' => $this->viewTree($record->cat_link),
         ]);
     }
 
 
-    /**
-     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
-     * EDITS RECORDS
-     */
+    # ADMIN CONTROL PANEL
+    #  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+    public function panel()
+    {
+        if (!$this->auth) $this->redirect();
+        $status = strtolower($this->UserControl->status);
+
+        $this->render('index', [
+            'contentLeft' => $status,
+            'contentRight' => 'panel',
+        ]);
+    }
+
+
+
+
+
+    # EDITS RECORDS
+    #  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
     public function create()
     {
         $edit = new Edit();
         $edit->formDataFill();
         $this->render('edit', [
-            'formData'=> $edit->formData,
-            'userId'=> $this->auth,
+            'formData' => $edit->formData,
+            'userId' => $this->auth,
         ]);
     }
 
@@ -116,12 +104,12 @@ class Main extends Base
         $edit->formDataFill();
         $edit->updateData($link);
         $this->render('edit', [
-            'formData'=> $edit->formData,
-            'userId'=> $this->auth,
+            'formData' => $edit->formData,
+            'userId' => $this->auth,
         ]);
     }
 
-    public function save($id=null)
+    public function save($id = null)
     {
         $edit = new Edit();
         $edit->formDataFill();

@@ -4,6 +4,9 @@ namespace app;
 
 use app\Controllers\UserControl;
 use app\Controllers\Records;
+use app\Models\Snippets;
+use app\Models\Subcategory;
+use app\Models\Users;
 use \rec\Rec;
 use \rec\Controller;
 use \app\Models\Category;
@@ -13,6 +16,15 @@ class Base extends Controller
     public $title;
     public $auth = false;
     public $userData = null;
+
+    /** @var Users $modelUsers*/
+    public $modelUsers = null;
+    /** @var Snippets $modelSnippets*/
+    public $modelSnippets = null;
+    /** @var Category $modelCategory*/
+    public $modelCategory = null;
+    /** @var Subcategory $modelSubcategory*/
+    public $modelSubcategory = null;
 
     /** @var UserControl $UserControl*/
     public $UserControl;
@@ -27,11 +39,16 @@ class Base extends Controller
     {
         $this->title = Rec::$applicationName;
 
+        # Models
+        $this->modelUsers = new Users();
+        $this->modelSnippets = new Snippets();
+        $this->modelCategory = new Category();
+        $this->modelSubcategory = new Subcategory();
+
         # Контроль пользователей
         $this->UserControl = new UserControl();
-        $this->auth = $this->UserControl->auth;
         $this->userData = $this->UserControl->userData;
-
+        $this->auth = $this->UserControl->auth;
 
         # Контроль записей
         $this->Records = new Records($this->userData);
@@ -64,6 +81,27 @@ class Base extends Controller
         $this->redirect();
     }
 
+    public function actionRegister()
+    {
+        if($this->auth)
+            $this->redirect('index');
+
+        if($this->isAjax())
+        {
+            $result = $this->modelUsers->registerUser($_POST);
+            if($result){
+                $this->actionLogin($result['email'],$result['password'],false);
+                echo 'success';
+            }
+            exit;
+        }
+
+        $this->render('index', [
+            'contentLeft'=> $this->renderPartial('register',['auth'=> $this->auth,]),
+            'contentRight'=> null,
+        ]);
+    }
+
 
 
     # Common views parts
@@ -84,6 +122,25 @@ class Base extends Controller
             false);
     }
 
+    public function viewTree($link)
+    {
+        $treeRecords = $this->modelSnippets->treeCategoryLink($link);
+
+        return $this->renderPartial('//main/tree',[
+            'treeRecords' => $treeRecords,
+            'userData' => $this->userData,
+            'auth' => $this->auth,
+        ]);
+    }
+
+    public function viewCreate()
+    {
+        /*return $this->renderPartial('tree',[
+            'userData' => $this->userData,
+            'auth' => $this->auth,
+        ]);*/
+    }
+
     public function activeCategory()
     {
         $this->categories = Category::model()->db->getAll(null, "visibly=1 and type='public'");
@@ -102,6 +159,7 @@ class Base extends Controller
         $htmlData .= $this->renderPartial('//main/user', [
                 'auth'=>$this->auth,
                 'userData'=>$this->UserControl->userData,
+                'status'=>$this->UserControl->status,
             ]);
         $htmlData .= $this->renderPartial('//main/services', [
                 'auth'=>$this->auth

@@ -11,7 +11,7 @@
 
 <div class="grid clear">
 
-    <div class="grid-11 first">
+    <div class="grid_11 first">
 
         <div class="public_snippets_box">
             <ul>
@@ -25,7 +25,7 @@
         <div class="private_snippets_box" style="display: none;">
             <ul>
                 <?php foreach ($privateCategory as $prv_c): ?>
-                    <li><a href="/private/cat/<?= $prv_c['link']?>"><?= $prv_c['title']?></a></li>
+                    <li><a href="/space/cat/<?= $prv_c['link']?>"><?= $prv_c['title']?></a></li>
                 <?php endforeach; ?>
                 <li></li>
             </ul>
@@ -34,8 +34,8 @@
     </div>
 
     <?php if($auth):?>
-        <div class="grid-1">
-            <div class="simple_btn toggle_cat" style="width: 73px; text-align: center; color: #FFC66D;">Private</div>
+        <div class="grid_1">
+            <div class="simple_btn toggle_cat_btn">Private</div>
         </div>
     <?php endif;?>
 
@@ -43,7 +43,7 @@
 <script>
     var cookieToggleCategory = $.cookie('toggle_category');
     var isAuth = '<?=$auth?>';
-    var toggleCat = $('.toggle_cat');
+    var toggleCat = $('.toggle_cat_btn');
     var publicBox = $('.public_snippets_box');
     var privateBox = $('.private_snippets_box');
     var isPublic = true;

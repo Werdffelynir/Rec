@@ -21,7 +21,8 @@ class Snippets extends Model
         'ithelp'=>'',
         'tags'=>'',
         'type'=>'',
-        'datecreate'=>''
+        'unlock'=>'',
+        'datecreate'=>'',
     ];
 
     public function init(){}
@@ -37,9 +38,17 @@ class Snippets extends Model
     }
 
 
-    public function allByCategoryLink($link, $type='public')
+    public function allByCategoryLink($link, $type=null, $userId=null)
     {
         $link = filter_var($link,FILTER_SANITIZE_STRING);
+
+        $whereUserId = '';
+        if($userId)
+            $whereUserId = " AND ct.id_user=$userId";
+
+        $whereType = '';
+        if($type)
+            $whereType = " AND sp.type='{$type}'";
 
         $SQL = "SELECT sp.*,
                     ct.link as cat_link, ct.title as cat_title,
@@ -47,7 +56,7 @@ class Snippets extends Model
                 FROM snippets sp
                 LEFT JOIN Category ct ON (ct.id = sp.id_category)
                 LEFT JOIN Subcategory sct ON (sct.id = sp.id_sub_category)
-                WHERE ct.link='{$link}' and sp.type='{$type}'";
+                WHERE ct.link='{$link}' $whereType $whereUserId";
 
         return $this->db->query($SQL)->all("obj");
     }
@@ -62,9 +71,17 @@ class Snippets extends Model
         return $tree;
     }
 
-    public function recordLink($link, $type='public')
+    public function recordLink($link, $type=null, $userId=null)
     {
         $link = filter_var($link,FILTER_SANITIZE_STRING);
+
+        $whereUserId = '';
+        if($userId)
+            $whereUserId = " AND ct.id_user=$userId";
+
+        $whereType = '';
+        if($type)
+            $whereType = " AND sp.type='{$type}'";
 
         $SQL = "SELECT sp.*,
                     ct.link as cat_link, ct.title as cat_title,
@@ -72,7 +89,7 @@ class Snippets extends Model
                 FROM snippets sp
                 LEFT JOIN Category ct ON (ct.id = sp.id_category)
                 LEFT JOIN Subcategory sct ON (sct.id = sp.id_sub_category)
-                WHERE sp.link='{$link}' and sp.type='{$type}'";
+                WHERE sp.link='{$link}' $whereType $whereUserId";
 
         return $this->db->query($SQL)->row("obj");
     }

@@ -37,6 +37,7 @@ class Controller {
 
     public function error404()
     {
+        $urlCurrent = Rec::$urlCurrent;
         $linkHome = Rec::$url;
         $linkBeck = (isset($_SERVER['HTTP_REFERER']))?$_SERVER['HTTP_REFERER']:'#';
 
@@ -57,13 +58,13 @@ class Controller {
             </head><body><div class='box404'>
                 <h1>404. That’s an error.</h1>
                 <h2>The requested URL was not found on this server.</h2><hr/>
-                <a href='".Rec::$urlCurrent."'>Reload page</a>
+                <a href='".$urlCurrent."'>Reload page</a>
                 <p class='text'>
                     <a href='".$linkHome."'>Go home </a><br>
                     <a href='".$linkBeck."'>Go back </a><br>
                     <a href='http://google.com'>Go go Google </a><br><br></p>
                 <h3>Url:</h3>
-                <code><a href='".Rec::$urlCurrent."'>".Rec::$urlCurrent."</a></code><hr/>
+                <code><a href='".$urlCurrent."'>".$urlCurrent."</a></code><hr/>
             </div></body></html>";
         exit;
     }

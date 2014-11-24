@@ -198,9 +198,6 @@ class Request {
             die();
         }
 
-        if( !(strpos($url,'http://') > -1) )
-            $url = Rec::$url.$url;
-
         if($delayForce===true){
             if (!headers_sent()) {
                 header('Location: ' . $url);
@@ -218,12 +215,15 @@ class Request {
             echo "</body></html>";
             exit;
         }
-
-        if (!headers_sent($file, $line)) {
-            if ($delayForce)
+        if (!headers_sent($file, $line))
+        {
+            if ($delayForce) {
                 header('Refresh: ' . $delayForce . '; url=' . $url, true);
-            else
-                header('Location: ' . $url, true, $code);
+            }else{
+                header('Location:'.$url, true, $code);
+            }
+
+
         } else {
             return true;
         }

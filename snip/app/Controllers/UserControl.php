@@ -12,6 +12,7 @@ class UserControl extends Controller
     public $role;
     public $userData;
 
+    public $status = '';
     public $isGuest = false;
     public $isUser = false;
     public $isModerator = false;
@@ -43,22 +44,24 @@ class UserControl extends Controller
                 {
                     case 1:
                         $this->isUser = true;
+                        $this->status = 'User';
                         break;
                     case 2:
                         $this->isModerator = true;
+                        $this->status = 'Moderator';
                         break;
                     case 3:
                         $this->isGod = true;
+                        $this->status = 'Administrator';
                         break;
                 }
 
             }else{
-
+                $this->status = 'Guest';
                 $this->isGuest = true;
             }
         }
     }
-
 
     public function login($login, $password)
     {

@@ -23,12 +23,17 @@ use rec\Rec;
 <div class="page">
 
     <div class="header box grid clear">
-        <div class="grid-3 first"><a class="logo" href="/"> <h1>SNIPPETS NOTES</h1> </a></div>
-        <div class="grid-6"> <div class="box search"><input name="search" type="text"/> SEARCH</div> </div>
-        <div class="grid-3">
+        <div class="grid_3 first"><a class="logo" href="/"> <h1>SNIPPETS NOTES</h1> </a></div>
+        <div class="grid_6"> <div class="box search"><input name="search" type="text"/> SEARCH</div> </div>
+        <div class="grid_3">
             <div class="right_box">
                 <?php if($this->auth): ?>
-                    <a class="right_title simple_btn" href="/create">Create New</a>
+                    <?php if($this->UserControl->isModerator): ?>
+                        <a class="right_title simple_btn" href="/panel">Mod panel</a>
+                    <?php elseif($this->UserControl->isGod): ?>
+                        <a class="right_title simple_btn" href="/panel">God panel</a>
+                    <?php endif; ?>
+                    <a class="right_title simple_btn" href="/space">My space</a>
                     <a class="right_title simple_btn" href="/logout">Logout</a>
                 <?php else: ?>
                     <a class="right_title simple_btn" href="/register">Register</a>

@@ -8,13 +8,13 @@
 
 <div class="box content_item">
     <div class="grid clear">
-        <div class="grid-6 first content_item_path">
+        <div class="grid_6 first content_item_path">
             <p>
                 <a href="/cat/<?=$record->cat_link?>"><?=$record->cat_title?></a>
                 / <a href="/subcat/<?=$record->sub_cat_link?>"><?=$record->sub_cat_title?></a>
             </p>
         </div>
-        <div class="grid-6">
+        <div class="grid_6">
             <div class="box_menu">
                 <a href="#" style="text-align: center">+</a>
                 <span style="color: #ffa615; font-weight: bold;text-align: center">
@@ -29,10 +29,10 @@
     </div>
     <hr/>
     <div class="grid clear">
-        <div class="grid-10 first content_item_title">
+        <div class="grid_10 first content_item_title">
             <p> <?=$record->title?> </p>
         </div>
-        <div class="grid-2" style="text-align: right">
+        <div class="grid_2" style="text-align: right">
             <p><?=date('m.d.y',strtotime($record->datecreate))?></p>
         </div>
     </div>

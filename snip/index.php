@@ -51,6 +51,9 @@ $R->urlDefault('Main');
 $R->urlNotFound('Main/error404');
 
 $R->urlAdd('Main/index', 'index');
+
+$R->urlAdd('Main/profile', 'profile');
+$R->urlAdd('Main/records', 'records');
 $R->urlAdd('Main/search', 'search/{p:words}');
 $R->urlAdd('Main/cat', 'cat/{p:link}/{n:page}');
 $R->urlAdd('Main/subcat', 'subcat/{p:link}/{n:page}');
@@ -59,5 +62,8 @@ $R->urlAdd('Main/create', 'create');
 $R->urlAdd('Main/edit', 'edit/{p:link}');
 $R->urlAdd('Main/save', 'save/{p:id}');
 $R->urlAdd('Main/delete', 'delete/{p:link}');
+$R->urlAdd('Main/panel', 'panel');
+
+$R->urlAdd('Space/index', 'space/{p:link1}/{p:link2}/{p:link3}');
 
 $R->run();

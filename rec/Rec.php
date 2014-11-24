@@ -243,6 +243,7 @@ class Rec
                 if(!empty($this->recUrls[$kr]['args']) && !empty($params))
                     $args = array_combine($this->recUrls[$kr]['args'], $params);
             }
+
         }
 
         if(!empty($classMethods))
@@ -309,8 +310,14 @@ class Rec
                 }
             }
 
+            //var_dump(self::$controller,self::$action);
+            //var_dump(method_exists($controllerObj, self::$action));
+
+
             if (method_exists($controllerObj, self::$action))
             {
+
+
                 if(self::$action=='error404')
                     header("HTTP/1.0 404 Not Found");
 
@@ -332,7 +339,7 @@ class Rec
                 }
 
             } else {
-                Request::redirect(self::$url.'/error404',false,'404');
+                call_user_func(array($controllerObj, 'error404'));
             }
 
         } else {

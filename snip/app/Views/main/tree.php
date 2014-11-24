@@ -2,21 +2,25 @@
 
 use \rec\Rec;
 
+/**
+ * @var array $treeRecords;
+ * @var array $userData;
+ * @var $auth;
+ */
+
 function actMenu($link){
     $arg = Rec::urlArg();
     if(isset($arg) AND $link == $arg)
         echo "activeMenu";
 }
-/**
- * @var array $treeRecords;
- */
+
 ?>
 
 <div class="box panel">
     <div class="box_menu">
         <a href="#">Public</a>
-        <a href="#">Private</a>
-        <a href="#">Favorites</a>
+        <a href="#" <?=(!$auth)?'class="box_menu_disabled"':''?>>Private</a>
+        <a href="#" <?=(!$auth)?'class="box_menu_disabled"':''?>>Favorites</a>
     </div>
 </div>
 
