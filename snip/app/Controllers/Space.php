@@ -19,7 +19,6 @@ class Space extends Base
 
     public function index()
     {
-        //$args = func_get_args();
         if($args = func_get_args())
         {
             $this->action = $args[0];
@@ -37,6 +36,7 @@ class Space extends Base
 
             case 'edit':
                 //snippet_45
+                //$this->actionParam
                 $this->editform();
                 break;
 
@@ -53,6 +53,10 @@ class Space extends Base
 
             case 'cat':
                 $this->cat($this->actionParam);
+                break;
+
+            case 'snippet':
+                $this->snippet($this->actionParam);
                 break;
 
             default:
@@ -81,17 +85,18 @@ class Space extends Base
 
         $subcategories = [];
         $_subcategories = $this->Records->privateSubcategory();
-        foreach($_subcategories as $_subcat){
+        foreach($_subcategories as $_subcat) {
             $subcat['id'] = $_subcat['id'];
             $subcat['title'] = $_subcat['title'];
             $subcategories[$_subcat['id_category']][] = $subcat;
         }
+
         $this->render('editform',
             [
                 'userData' => $this->userData,
                 'status' => $this->UserControl->status,
                 'fields' => $fields,
-                'categories' => $this->Records->privateCategory(),
+                'categories' => $this->Records->privateCategoryList(),
                 'subcategories' => $subcategories,
             ]);
     }
@@ -111,13 +116,31 @@ class Space extends Base
 
     public function cat($link, $page = 1)
     {
-        $allRecords = $this->modelSnippets->allByCategoryLink($link, 'private', $this->UserControl->id);
+        $allRecords = $this->modelSnippets->allSnippetsByCategoryLink($link, 'private', $this->UserControl->id);
 
         $this->render('index', [
-            'contentLeft' => $this->renderPartial('//main/items', ['allRecords' => $allRecords]),
-            'contentRight' => $this->viewTree($link),
+            'contentLeft' => $this->renderPartial('//main/items', [
+                'allRecords' => $allRecords,
+                'type' => 'private',
+            ]),
+            'contentRight' => $this->viewTree($link, 'private'),
         ]);
     }
 
+    public function snippet($link, $page = 1)
+    {
+        $record = $this->modelSnippets->recordLink($link, $this->UserControl->id);
+
+        $this->render('index', [
+            'contentLeft' => $this->renderPartial('//main/view', [
+                'record' => $record,
+                'type' => 'private',
+                'auth' => $this->auth,
+                'userData' => $this->userData,
+            ]),
+            'contentRight' => $this->viewTree($record->cat_link,'private', $this->UserControl->id),
+
+        ]);
+    }
 
 } 

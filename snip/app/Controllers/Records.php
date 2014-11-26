@@ -39,13 +39,14 @@ class Records extends Controller
 
     }
 
-    public function publicCategory()
+    public function publicCategoryList()
     {
-        return $this->modelCategory->db->getAll("*", "visibly=1 and type='public' and id_user=0");
+        return $this->modelCategory->db->getAll("*", "visibly=1 and type='public' and id_user=0 ORDER BY id asc");
     }
 
     public function publicSubcategory($category = null)
     {
+/**/
         if (is_numeric($category))
             return $this->modelSubcategory->db->getAll("*", "visibly=1 AND type='public' AND id_category=".$category);
         else if(is_string($category))
@@ -57,10 +58,10 @@ class Records extends Controller
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-    public function privateCategory()
+    public function privateCategoryList()
     {
         if($this->auth)
-            return $this->modelCategory->db->getAll("*", "visibly=1 and id_user=$this->userId");
+            return $this->modelCategory->db->getAll("*", "visibly=1 AND (id_user=$this->userId OR id_user=0) ORDER BY id asc");
         else
             return [];
     }
@@ -68,9 +69,9 @@ class Records extends Controller
     public function privateSubcategory($id = null)
     {
         if(is_numeric($id))
-            return $this->modelSubcategory->db->getAll("*", "visibly=1 AND id_user=$this->userId AND id=$id");
+            return $this->modelSubcategory->db->getAll("*", "visibly=1 AND (id_user=$this->userId OR id_user=0) AND id=$id");
         else
-            return $this->modelSubcategory->db->getAll("*", "visibly=1 AND id_user=$this->userId");
+            return $this->modelSubcategory->db->getAll("*", "visibly=1 AND (id_user=$this->userId OR id_user=0)");/**/
     }
 
     public function privateSnippets()

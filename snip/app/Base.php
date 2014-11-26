@@ -109,33 +109,42 @@ class Base extends Controller
 
     public function viewCategory()
     {
-        $publicCategory = $this->Records->publicCategory();
-        $privateCategory = $this->Records->privateCategory();
+        $publicCategory = $this->Records->publicCategoryList();
+        $privateCategory = $this->Records->privateCategoryList();
 
         $this->renderPartial('//layout/menuCategory',
             [
                 'auth'=>$this->auth,
-                'userData'=>$this->UserControl->userData,
+                'userData'=>$this->userData,
                 'publicCategory'=>$publicCategory,
                 'privateCategory'=>$privateCategory,
             ],
             false);
     }
 
-    public function viewTree($link)
+
+    public function viewTree($link, $type)
     {
-        $treeRecords = $this->modelSnippets->treeCategoryLink($link);
+
+        $treeRecords = [];
+        if($type=='public')
+            $treeRecords = $this->modelSnippets->treeCategoryLink($link, 'public');
+        else if($this->auth && $type=='private')
+            $treeRecords = $this->modelSnippets->treeCategoryLink($link, 'private', $this->UserControl->id);
 
         return $this->renderPartial('//main/tree',[
             'treeRecords' => $treeRecords,
             'userData' => $this->userData,
             'auth' => $this->auth,
+            'link' => $link,
+            'type' => $type,
         ]);
     }
 
     public function viewCreate()
     {
-        /*return $this->renderPartial('tree',[
+        /*
+        return $this->renderPartial('tree',[
             'userData' => $this->userData,
             'auth' => $this->auth,
         ]);*/
@@ -143,11 +152,11 @@ class Base extends Controller
 
     public function activeCategory()
     {
-        $this->categories = Category::model()->db->getAll(null, "visibly=1 and type='public'");
+        /*$this->categories = Category::model()->db->getAll(null, "visibly=1 and type='public'");
 
         if($this->auth){
             $this->categoriesUsers = Category::model()->db->getAll(null, "visibly=1 and id_user='".$this->UserControl->id."'");
-        }
+        }*/
 
     }
 

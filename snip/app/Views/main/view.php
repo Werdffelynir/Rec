@@ -3,7 +3,11 @@
 
 /**
  * @var object $record;
+ * @var $type;
+ * @var $auth;
+ * @var $userData;
  */
+
 ?>
 
 <div class="box content_item">
@@ -21,9 +25,15 @@
                     <?=$record->ithelp?>
                 </span>
                 <a href="#" style="text-align: center">-</a>
-                <a href="#">favorite</a>
-                <a href="/edit/<?=$record->link?>">edit</a>
-                <a href="#" onclick="if(confirm('Delete this records?')){window.location='/delete/<?=$record->link?>';};">delete</a>
+
+                <?php if($auth):?>
+                    <a href="#">favorite</a>
+                    <?php if($record->id_user==$userData['id']):?>
+                        <a href="/space/edit/<?=$record->link?>">edit</a>
+                        <a href="#" onclick="if(confirm('Delete this records?')){window.location='/delete/<?=$record->link?>';};">delete</a>
+                    <?php endif;?>
+                <?php endif;?>
+
             </div>
         </div>
     </div>

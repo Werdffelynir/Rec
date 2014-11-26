@@ -2,14 +2,17 @@
 
 /**
  * @var array $allRecords;
+ * @var $type;
  */
+
+$linkTo = ($type=='private')?'/space':'';
 ?>
 
 <?php foreach($allRecords as $record): ?>
 
     <div class="box content_item">
         <div class="grid clear">
-            <div class="grid_10 first"><a class="content_item_title" href="/snippet/<?=$record->link?>"> <?=$record->title?> </a></div>
+            <div class="grid_10 first"><a class="content_item_title" href="<?=$linkTo?>/snippet/<?=$record->link?>"> <?=$record->title?> </a></div>
             <div class="grid_2" style="text-align: right">+<?=$record->ithelp?></div>
         </div>
         <hr/>

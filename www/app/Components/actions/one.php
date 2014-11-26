@@ -1,1 +1,0 @@
-<img src="<?=\rec\Rec::$url?>public/images/img.jpg" alt=""/>

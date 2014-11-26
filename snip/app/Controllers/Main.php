@@ -3,7 +3,6 @@
 namespace app\Controllers;
 
 use \app\Base;
-use app\Models\Snippets;
 
 class Main extends Base
 {
@@ -33,10 +32,8 @@ class Main extends Base
         ]);
     }
 
-    /**
-     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
-     * SHOW RECORDS
-     */
+    # SHOW RECORDS
+    #  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
 
     /**
      * @param $link
@@ -44,11 +41,14 @@ class Main extends Base
      */
     public function cat($link, $page = 1)
     {
-        $allRecords = $this->modelSnippets->allByCategoryLink($link, 'public');
+        $allRecords = $this->modelSnippets->allSnippetsByCategoryLink($link, 'public');
 
         $this->render('index', [
-            'contentLeft' => $this->renderPartial('items', ['allRecords' => $allRecords]),
-            'contentRight' => $this->viewTree($link),
+            'contentLeft' => $this->renderPartial('items', [
+                'allRecords' => $allRecords,
+                'type' => 'public',
+            ]),
+            'contentRight' => $this->viewTree($link, 'public'),
         ]);
     }
 
@@ -62,14 +62,21 @@ class Main extends Base
         $record = $this->modelSnippets->recordLink($link);
 
         $this->render('index', [
-            'contentLeft' => $this->renderPartial('view', ['record' => $record]),
-            'contentRight' => $this->viewTree($record->cat_link),
+            'contentLeft' => $this->renderPartial('view', [
+                'record' => $record,
+                'type' => 'public',
+                'auth' => $this->auth,
+                'userData' => $this->userData,
+            ]),
+            'contentRight' => $this->viewTree($record->cat_link,'public'),
         ]);
     }
 
 
     # ADMIN CONTROL PANEL
     #  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+
     public function panel()
     {
         if (!$this->auth) $this->redirect();

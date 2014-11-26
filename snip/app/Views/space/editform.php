@@ -98,6 +98,7 @@ $id = '';
                 inputSubCat.css('display', 'none');
             }
             var currentCatData = subCatData[currentCat];
+            console.log(currentCatData);
             var optionHtml = createSelectList(currentCatData);
             selectSubCat.html(optionHtml);
         }
@@ -116,11 +117,13 @@ $id = '';
     {
         var select = '';
         var optionHtml = '<option value="new">New Sub Category</option>';
-        for (var ci = 0; ci < currentCatData.length; ci++) {
-            if(idSubCat==parseInt(currentCatData[ci].id))
-                select = 'selected';
-            optionHtml += '<option '+select+' value="' + currentCatData[ci].id + '">' + currentCatData[ci].title + '</option>';
-            select = '';
+        if(currentCatData !== undefined){
+            for (var ci = 0; ci < currentCatData.length; ci++) {
+                if(idSubCat==parseInt(currentCatData[ci].id))
+                    select = 'selected';
+                optionHtml += '<option '+select+' value="' + currentCatData[ci].id + '">' + currentCatData[ci].title + '</option>';
+                select = '';
+            }
         }
         return optionHtml;
     }
