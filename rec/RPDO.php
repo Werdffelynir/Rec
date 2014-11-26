@@ -309,7 +309,7 @@ class RPDO
             if(self::$DBH && !self::$STH){
                 if(Rec::$debug)
                     Rec::ExceptionError("Синтаксическая ошибка запроса",$constructSql);
-                return null;
+                throw new \Exception('Синтаксическая ошибка запроса '.'SQL:'.$constructSql, 1);
             }else{
                 $resultUpdate = self::$STH->execute($dataValue);
                 return $resultUpdate;
@@ -317,7 +317,7 @@ class RPDO
         } else {
             if(Rec::$debug)
                 Rec::ExceptionError("Количество полей не соответствует количеству значений!");
-            die("Количество полей не соответствует количеству значений!");
+            throw new \Exception("Количество полей не соответствует количеству значений!", 1);
         }
     }
 
@@ -380,7 +380,7 @@ class RPDO
         if(self::$DBH && !self::$STH){
             if(Rec::$debug)
                 Rec::ExceptionError("Синтаксическая ошибка запроса",'SQL:'.$constructSql .'<br>Bind:<pre>'.print_r($binds,true).'</pre>');
-            return null;
+            throw new \Exception('Синтаксическая ошибка запроса '.'SQL:'.$constructSql .print_r($binds,true), 1);
         }else{
             $resultUpdate = self::$STH->execute($binds);
             return $resultUpdate;
@@ -428,7 +428,7 @@ class RPDO
         if(self::$DBH && !self::$STH){
             if(Rec::$debug)
                 Rec::ExceptionError("Синтаксическая ошибка запроса",'SQL:'.$constructSql .'<br>Bind:<pre>'.print_r($binds,true).'</pre>');
-            return null;
+            throw new \Exception('Синтаксическая ошибка запроса '.'SQL:'.$constructSql .print_r($binds,true), 1);
         }else{
             $resultInsert = self::$STH->execute($dataColumn);
             if($resultInsert)
@@ -490,12 +490,18 @@ class RPDO
 
     private function checkConnect($checkSTH=false)
     {
-        if (self::$DBH == null)
-            die("Connection with DataBase closed!");
+        if (self::$DBH == null){
+            if(Rec::$debug)
+                Rec::ExceptionError('Connection with DataBase closed!');
+            throw new \Exception('Connection with DataBase closed!', 1);
+        }
 
         if($checkSTH)
-            if (self::$STH == null)
-                die('Error SQL string! Check your query string, error can be names :<br><code style="color:red"><pre>'.$this->sql.'</pre></code>');
+            if (self::$STH == null){
+                if(Rec::$debug)
+                    Rec::ExceptionError("Синтаксическая ошибка запроса",'SQL:'.$this->sql);
+                throw new \Exception('Error SQL string! Check your query string, error can be names :<br><code style="color:red"><pre>'.$this->sql.'</pre></code>', 1);
+            }
     }
 
 

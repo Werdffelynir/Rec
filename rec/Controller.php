@@ -31,6 +31,7 @@ class Controller {
     public function init(){}
     public function beforeAction(){}
     public function afterAction(){}
+
     public function actions(){
         return [];
     }
@@ -136,15 +137,19 @@ class Controller {
      * @param string $position
      * @param bool $skipExists
      */
-    public function out($position='out', $skipExists=false)
+    public function out($position='default', $skipExists=false)
     {
-        if(isset($this->outPosition[$position]))
+        if(array_key_exists($position, $this->outPosition)) {
             echo $this->outPosition[$position];
-        else
+        } else {
             if(!$skipExists) {
                 if(Rec::$debug)
                     Rec::ExceptionError('Out position undefined', $position);
+            } else {
+                $this->addOut([$position=>'']);
+                $this->out($position,$skipExists);
             }
+        }
     }
 
 
@@ -168,6 +173,33 @@ class Controller {
         }
     }
 
+    /**
+     * Устанавлевает значение для позиций
+     *
+     * @param string $position          название позиции
+     * @param null|string $variableData строка данных
+     * @param bool $skipExists          создает позицию если не существует, и устанавлевает ей значение, false поумолчанию
+     */
+    public function setOut($position='default', $variableData = null, $skipExists=false)
+    {
+        if(array_key_exists($position, $this->outPosition)){
+            $this->outPosition[$position]=$variableData;
+        }else{
+            if(!$skipExists) {
+                if(Rec::$debug)
+                    Rec::ExceptionError('Out position undefined', $position);
+            } else {
+                $this->addOut([$position=>'']);
+                $this->setOut($position,$variableData,$skipExists);
+            }
+        }
+    }
+
+    /**
+     * @param string $url
+     * @param bool $thisApp
+     * @param int $sleep
+     */
     public function redirect($url='', $thisApp=true, $sleep=0)
     {
         if($thisApp)
