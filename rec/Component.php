@@ -194,11 +194,14 @@ class Component
     public static function renderPartial($partial, array $data = array(), $returned=true)
     {
         $viewPartial = Rec::$pathApp.'Views/'.$partial.'.php';
+
+
         ob_start();
         extract($data);
-
         if(is_file($viewPartial))
+        {
             require_once $viewPartial;
+        }
         else
             Rec::ExceptionError('File not exists', $viewPartial);
 

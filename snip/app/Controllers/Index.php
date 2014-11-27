@@ -9,7 +9,7 @@ class Index extends BaseController
 {
 
     public function index(){
-        $this->render('index');
+        $this->render('main');
     }
 
 

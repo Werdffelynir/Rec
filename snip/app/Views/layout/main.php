@@ -14,13 +14,13 @@
 </head>
 <body <?= $this->bodyAttr?>>
 
-<?$this->out('header')?>
+<?$this->out('header',true)?>
 
-<?$this->out('menu')?>
+<?$this->out('menu',true)?>
 
 <?$this->out()?>
 
-<?$this->out('footer')?>
+<?$this->out('footer',true)?>
 
 <?= $this->body?>
 </body>

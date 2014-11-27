@@ -112,6 +112,7 @@ class Controller {
      */
     public function render($partial='//out', array $data = array())
     {
+
         if($partial!==false)
             $this->outPosition[$this->outPositionDefault] = $this->renderPartial($partial, $data, true);
 
@@ -215,7 +216,21 @@ class Controller {
         return Rec::urlArg($param, $element);
     }
 
+    private static $getInstance = null;
+    public static  function instance()
+    {
+        if(self::$getInstance===null){
+            self::$getInstance = new Controller();
+            return self::$getInstance;
+        } else {
+        return self::$getInstance;
+        }
+    }
 
+    public function bind($data)
+    {
+        return $data;
+    }
 
     /**
      *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
