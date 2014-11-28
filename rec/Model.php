@@ -2,6 +2,7 @@
 
 namespace rec;
 
+
 class Model
 {
     /** @var int $connectionCount */

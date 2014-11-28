@@ -2,6 +2,7 @@
 
 namespace rec;
 
+
 class Rec
 {
     /** @var bool $debug */

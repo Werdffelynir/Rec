@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Comp-2
- * Date: 27.11.2014
- * Time: 18:25
- */
 
 namespace rec;
 
@@ -17,7 +11,6 @@ class View
      * Работет совместно с методом setChunk()
      */
     private static $chunk = [];
-
 
     public static $stackScriptsData;
     public static $stackJavaScriptsHtml;
