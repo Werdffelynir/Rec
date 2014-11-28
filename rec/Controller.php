@@ -21,6 +21,7 @@ class Controller {
     public $outPosition = array();
     public $outPositionDefault = 'default';
 
+
     public function __construct()
     {
         $this->outPosition[$this->outPositionDefault] = null;
@@ -32,7 +33,8 @@ class Controller {
     public function beforeAction(){}
     public function afterAction(){}
 
-    public function actions(){
+    public function actions()
+    {
         return [];
     }
 
@@ -87,24 +89,12 @@ class Controller {
         else
             $this->partial = strtolower(Rec::$controller).'/'.$partial;
 
-        $view = Component::renderPartial($this->partial, $data, true);
+        $view = View::renderPartial($this->partial, $data, true);
 
         if($returned) return $view;
         else echo $view;
     }
 
-    /*public function renderOut($position, array $data = array())
-    {
-        if(is_array($position))
-        {
-            foreach ($position as $variablePosition=>$variableData) {
-                $this->outPosition[$variablePosition]=$variableData;
-            }
-
-        }else if(is_string($position)){
-
-        }
-    }*/
 
     /**
      * @param string $partial   если не пустая строка по умолчанию Views/controller/method.php
@@ -112,15 +102,19 @@ class Controller {
      */
     public function render($partial='//out', array $data = array())
     {
-
         if($partial!==false)
             $this->outPosition[$this->outPositionDefault] = $this->renderPartial($partial, $data, true);
 
         $this->renderLayout();
     }
 
+
     public function renderLayout()
     {
+        $generateData = View::generate();
+        $this->body = $generateData['body'];
+        $this->head = $generateData['head'];
+
         $viewLayout = Rec::$pathApp.'Views/layout/'.$this->layout.'.php';
 
         if(is_file($viewLayout))
@@ -214,22 +208,6 @@ class Controller {
     public function urlArg($param=false, $element=1)
     {
         return Rec::urlArg($param, $element);
-    }
-
-    private static $getInstance = null;
-    public static  function instance()
-    {
-        if(self::$getInstance===null){
-            self::$getInstance = new Controller();
-            return self::$getInstance;
-        } else {
-        return self::$getInstance;
-        }
-    }
-
-    public function bind($data)
-    {
-        return $data;
     }
 
     /**
@@ -331,7 +309,7 @@ class Controller {
     #
     #   Components
     #
-/**/
+
     public function hookRegister($event, $callback = null, array $params = array())
     {
         return Component::hookRegister($event,$callback,$params);
@@ -357,14 +335,55 @@ class Controller {
         return Component::flash($key, $value, $keep);
     }
 
+
+    #
+    #   View
+    #
+
     public function setChunk( $chunkName, $chunkView='', array $dataChunk=null, $returned=false )
     {
-        return Component::setChunk($chunkName, $chunkView, $dataChunk, $returned);
+        return View::setChunk($chunkName, $chunkView, $dataChunk, $returned);
     }
-
     public function chunk( $chunkName, $echo=true )
     {
-        return Component::chunk($chunkName, $echo);
+        return View::chunk($chunkName, $echo);
     }
+    public function addScript($data, $src=null, $depth=null, $position=null)
+    {
+        View::addScript($data, $src, $depth, $position);
+    }
+    public function delScript($name)
+    {
+        View::delScript($name);
+    }
+    public function addBeforeScript($searchName,$addName,$src)
+    {
+        View::addBeforeScript($searchName,$addName,$src);
+    }
+    public function addAfterScript($searchName,$addName,$src)
+    {
+        View::addAfterScript($searchName,$addName,$src);
+    }
+    public function addStyle($data, $src=null, $depth=null)
+    {
+        View::addStyle($data, $src, $depth);
+    }
+    public function delStyle($name)
+    {
+        View::delStyle($name);
+    }
+    public function addBeforeStyle($searchName,$addName,$src)
+    {
+        View::addBeforeStyle($searchName,$addName,$src);
+    }
+    public function addAfterStyle($searchName,$addName,$src)
+    {
+        View::addAfterStyle($searchName,$addName,$src);
+    }
+    public function addJavascript($dataString)
+    {
+        View::addJavascript($dataString);
+    }
+
 }
 

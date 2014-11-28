@@ -28,6 +28,11 @@ class Site extends BaseController
 
     public function actionLogin()
     {
+        if($this->isAjax()){
+            echo 'some data';
+            exit;
+        }
+
         $this->render('formLogin');
     }
 

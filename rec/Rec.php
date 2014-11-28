@@ -152,6 +152,7 @@ class Rec
     private function autoloadClasses()
     {
         include_once('Component.php');
+        include_once('View.php');
         include_once('Controller.php');
         include_once('Request.php');
         include_once('Model.php');
@@ -310,9 +311,11 @@ class Rec
                 }
             }
 
-            //var_dump(self::$controller,self::$action);
-            //var_dump(method_exists($controllerObj, self::$action));
-
+            /*
+            $generateData = View::generate();
+            $controllerObj->body = $generateData['body'];
+            $controllerObj->head = $generateData['head'];
+            */
 
             if (method_exists($controllerObj, self::$action))
             {
