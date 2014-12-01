@@ -1,644 +1,399 @@
-/** COMMON
-********************************************************** */
-/* fonts */
-
-@import "http://webfonts.ru/import/aleksandrac.css";
-/* font-family: 'AleksandraC'; */
-
-@import "http://webfonts.ru/import/arnamu.css";
-/* font-family: 'Arian AMU'; */
-
-@import "http://webfonts.ru/import/ubuntu.css";
-/* font-family: 'Ubuntu Mono'; */
-
-
-
-
-h1{
-    padding: 10px 0 8px;
-}
-h2{
-    padding: 8px 0 6px;
-}
-h3{
-    padding: 6px 0 3px;
-}
-h4{
-    padding: 4px 0 2px;
-}
-h5{
-
-}
-p{
-/*    text-indent: 15px;
-    line-height: 20px;
-    padding-bottom: 10px;*/
+@font-face {
+    font-family: "AleksandraC";
+    src: url("../fonts/AleksandraC_regular.eot?") format("eot"),
+    url("../fonts/AleksandraC_regular.woff") format("woff"),
+    url("../fonts/AleksandraC_regular.ttf") format("truetype"),
+    url("../fonts/AleksandraC_regular.svg#Untitled") format("svg");
+    font-weight: normal;
+    font-style: normal;
 }
 
-blockquote{
-    border-left: 2px double #979A9D;
-    margin-left: 20px;
-    padding: 5px 0 5px 10px;
-    font-style: italic;
-    color: #3B3E41;
-    font-family: 'AleksandraC', Consolas, Arial;
+@font-face {
+    font-family: 'Anonymous Pro';
+    src: url('../fonts/anonymous_pro.eot');
+    src: url('../fonts/anonymous_pro.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/anonymous_pro.woff') format('woff'),
+    url('../fonts/anonymous_pro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-ol,ul{
-    margin: 10px 0 10px 25px;
-}
-ol li, ul li{
-    line-height: 18px;
-}
-
-img{
-    border-color: transparent;
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('../fonts/ubuntu-r.eot'),
+    url('../fonts/ubuntu-r.woff') format('woff'),
+    url('../fonts/ubuntu-r.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-hr{
-    border: none;
-    width: 100%;
-    height: 2px;
-    background-color: #FE7F00;
-    margin: 10px 0;
+@font-face {
+    font-family: 'Ubuntu Condensed';
+    src: url('../fonts/ubuntu-c.eot'),
+    url('../fonts/ubuntu-c.woff') format('woff'),
+    url('../fonts/ubuntu-c.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-
-.color_light{
-    color: #FFC66D;
+@font-face {
+    font-family: 'Ubuntu Mono';
+    src: url('../fonts/ubuntumono-r.eot'),
+    url('../fonts/ubuntumono-r.woff') format('woff'),
+    url('../fonts/ubuntumono-r.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
-.color_orange{
-    color: #ff5900;
-}
-.color_red{
-    color: #FF0000;
-}
-.color_blue{
-    color: #7576AA;
-}
-.color_grey{
-    color: #AAAAAA;
-}
-.color_grey2{
-    color: #555555;
-}
-.color_grey3{
-    color: #111111;
+*{}
+html{}
+body{
+    background-color: #FFFFFF;
+    font-family:'Ubuntu Condensed', 'Ubuntu', sans-serif;
+    font-size: 14px;
+    color: #0B080F;
 }
 
-input[type=text], input[type=password], select, textarea{
-    border: 1px solid #555555;
-    background-color: #111111;
-    color: #FFF;
-    padding: 0 5px;
+a{
+    color: #685881;
+    text-decoration: underline;
 }
-input[type=text], input[type=password]:focus, select:focus, textarea:focus{
-    outline: none;
-}
-
-/** HEADER */
-.logo{
-    color: #FFC66D;
+a:hover{
+    color: #51475F;
     text-decoration: none;
-    text-shadow: 1px 1px 2px #111111;
 }
-.logo:hover{
-    color: #FF6600;
+ul, ol{
+    list-style: none;
 }
 
+/* PAGE
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .page{
-    width: 1000px;
+    width: 1080px;
     margin: 0 auto;
 }
 
+
+/* HEADER
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .header{
-    margin-top: 5px;
-    min-height: 30px;
+    height: 35px;
+    padding: 5px;
+    background-color: #51475F;
+    color: #FFFFFF;
 }
 
-.cat_menu{
-    margin-top: 5px;
-    /*padding: 12px 4px 5px;*/
-    padding: 6px 6px 6px;
-}
+.header_title{}
 
-.content_box{
-    margin-top: 5px;
-}
-
-.content_left{
-    min-height: 300px;
-}
-
-.content_right{
-    min-height: 300px;
-}
-
-.footer{
-    margin-top: 5px;
-    min-height: 30px;
-    font-size: 11px;
-    text-align: center;
-}
-
-/* HEADER */
-.header h1{
-    padding: 2px 0 0;
-    font-size: 24px;
+.header_search_form{
     line-height: 24px;
 }
-input[name=search]{
-    border: 1px solid palegreen;
-    background-color: #111111;
-    color: #FFF;
-    padding: 0 5px;
-    width: 80%;
-}
-.search{
-    background-color: #181818;
-}
-input[name=search]:focus{
-    outline: none;
-    border: 1px solid #FE7F00;
-}
-.box_menu{
-
-}
-.box_menu a, .simple_btn{
-    text-decoration: none;
-    display: inline-block;
-    padding: 2px 10px;
-    min-width: 35px;
-    border: 1px solid #181818;
-    background: linear-gradient(to bottom, #313131 0%,#1e1e1e 100%);
-    box-shadow: 0 0 4px #111111;
-    color: #E1E1E1;
-    text-shadow: 1px -1px rgba(0,0,0,0.5);
-    font-size: 11px;
-    font-family: Consolas, "Courier New", Courier, monospace;
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-.box_menu a:hover, .simple_btn:hover{
-    color: #FFFFFF;
-}
-
-.box_menu a:active, .simple_btn:active{
-    box-shadow: inset 0 6px 12px rgba(0,0,0,0.8);
-    text-shadow: -1px -1px rgba(50,50,50,0.8);
-    color: #999999;
-}
-.box_menu_disabled{
-    box-shadow: inset 0 6px 12px rgba(0,0,0,0.8) !important;
-    text-shadow: -1px -1px rgba(50,50,50,0.8) !important;
-    color: #999999 !important;
-}
-.box_menu_active{
-    box-shadow: inset 0 6px 12px rgba(0,0,0,0.8) !important;
-    text-shadow: -1px -1px rgba(50,50,50,0.8) !important;
-    color: #FFC66D !important;
-}
-
-input[type=submit].simple_btn{
-    margin-bottom: 0;
-    margin-top: 5px !important;
-    vertical-align: baseline;
-}
-
-.big_btn{
-    width: 100% ;
-    display: block ;
-    padding: 15px !important;
-    text-align: center ;
-    color: #FFC66D;
-}
-
-.toggle_cat_btn{
-    text-align: center;
-    color: #FFC66D;
-    width: 77px;
-}
-
-.box{
-    background: #282828;
-    border: 1px solid #555555;
-    padding: 4px;
-    font-size: 12px;
-    box-shadow: 0 0 6px #111111;
-}
-
-/** login form */
-.right_box{
-    text-align: right;
-}
-.right_title{
-    line-height: 22px;
-}
-.login_box{
-    display: none;
-    position: absolute;
-    width: 160px;
-    margin-left: 66px;
-    margin-top: 8px;
-    box-shadow: 2px 2px 6px 3px rgba(0,0,0,0.4);
-}
-.login_box input{
-
-    width: 100%;
-    margin-bottom: 3px;
-}
-
-
-/** Category Menu */
-.cat_menu{
-    min-height: 30px;
-}
-
-.cat_menu ul{
-    list-style: none;
-    padding: 0; margin: 0;
-}
-
-.cat_menu ul li{
-    display: inline-block;
-    line-height: 14px;
-}
-
-.cat_menu ul li a{
-    display: block;
-    margin-right: 10px;
-    padding: 2px 10px;
-    min-width: 35px;
-    border: 1px solid #181818;
-    background: linear-gradient(to bottom, #313131 0%,#1e1e1e 100%);
-    box-shadow: 0 0 4px #111111;
-    color: #E1E1E1;
-    text-decoration: none;
-    text-shadow: 1px -1px rgba(0,0,0,0.5);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.cat_menu ul li a:hover{
-    color: #FFFFFF;
-}
-
-.cat_menu ul li a:active{
-    box-shadow: inset 0 6px 12px rgba(0,0,0,0.8);
-    color: #999999;
-    text-shadow: -1px -1px rgba(50,50,50,0.8);
-}
-
-.cat_menu ul li .count{
-    display: none;
-    position: absolute;
-    margin: -10px 0 0 2px;
-    padding: 0 1px;
-    min-width: 10px;
-    line-height: 9px;
-    color: #CDCDCD;
-    text-align: center;
-    text-shadow: 1px -1px rgba(0,0,0,0.8);
-    font-size: 8px;
-}
-
-
-
-/* -----------------------------------------------------------------------------
-CONTENT
------------------------------------------------------------------------------ */
-
-.content_left{
-
-}
-.content_left .box_menu{
-    text-align: right;
-    margin-bottom: 3px;
-}
-
-.content_item, .panel{
-    font-family: Consolas, "Courier New", Courier, monospace;
-    color: #668E96;
-    padding: 3px;
-    margin: 0px 0px 5px;
+.header_search_form input{
+    width: 400px;
     border: none;
-    background-color: #2F2F2F;
+    padding: 3px 5px 1px;
 }
-.content_item:hover{
-    background-color: #323232;
-}
-
-.content_item hr{
-    padding: 0; margin: 2px 0;
-    height: 1px;
- }
-.content_item p{
-    text-indent: 0;
-    padding: 0; margin: 0;
-    line-height: 20px;
-}
-
-
-.content_item_title{
+.header_search_form a{
+    padding: 0 5px;
+    color: #FFFFFF;
+    font-size: 16px;
     text-decoration: none;
-    color: #AAFFFF;
-    font-weight: bold;
 }
-.content_item_path a{
-    text-decoration: none;
-    color: rgb(150, 150, 170);
+.header_search_form a:hover{
+    text-decoration: underline;
 }
-.content_item_path a:hover{
-    color: rgb(200, 200, 200);
-}
-.content_item_tags{
+
+.header_menu{
+    line-height: 24px;
     text-align: right;
-    font-size: 11px;
 }
-.content_item_tags a{
+.header_menu a{
+    padding: 0 5px;
+    color: #FFFFFF;
+    font-size: 16px;
     text-decoration: none;
-    color: #7576AA;
 }
-.content_item_tags a:hover{
-    color: rgb(200, 200, 200);
-}
-
-.incontent_item_tags{
-    text-align:left;
-    font-size: 11px;
-}
-.incontent_item_tags a{
-    text-decoration: none;
-    color: #7576AA;
-}
-.incontent_item_tags a:hover{
-    color: rgb(200, 200, 200);
+.header_menu a:hover{
+    text-decoration: underline;
 }
 
 
-
-/* -----------------------------------------------------------------------------
-SNIPPET MENU LEFT
------------------------------------------------------------------------------ */
-
-ul.left_menu {
-    padding: 0;
-    margin: 5px 10px;
+/* MENU
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.menu{
+    width: 98%;
+    margin: 0 auto;
 }
-
-ul.left_menu a {
-    display: block;
-    padding: 0px 5px;
-    text-decoration: none;
-    line-height: 12px;
+.menu_public{
+    background-color: #595C82;
 }
-ul.left_menu li {
-    padding: 2px 0;
-    margin-left: -5px;
+.menu_public ul{
     list-style: none;
 }
-ul.left_menu>li>a {
+.menu_public ul li{
+    display: inline;
+}
+.menu_public ul li a{
+    display: inline-block;
+    padding: 3px 10px;
     color: #FFFFFF;
+    font-size: 16px;
+    text-decoration: none;
+}
+.menu_public ul li a:hover{
+    background-color: #51475F;
+}
+
+
+.menu_private{}
+
+
+/* CONTENT
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.content{
+    width: 98%;
+    margin: 3px auto;
+}
+.content_left{}
+.content_right{}
+
+
+/* TREE
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.tree_box{}
+.tree_menu, .line_menu{
+    background-color: #595C82;
+    padding: 5px;
+}
+.tree_menu a, .line_menu a{
+    padding: 3px 10px;
+    color: #FFFFFF;
+    font-size: 16px;
+    text-decoration: none;
+}
+.tree_menu a:hover, .line_menu a:hover{
+    text-decoration: underline;
+}
+.tree_content{}
+
+
+/* INSIDE ELEMENS
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.inside_box{}
+.inside_title{}
+
+
+
+
+.footer{
+    padding: 5px;
+    background-color: #51475F;
+    color: #FFFFFF;
+}
+.footer_copy{
+    text-align: center;
+}
+
+
+
+/* Content LIst Items */
+.lists{
+    margin-bottom: 4px;
+    padding: 3px;
+    background-color: #F5F5F5;
+}
+.lists_left{
+    width: 94%;
+    display: inline-block;
+    float: left;
+}
+.lists_right{
+    float: right;
+    width: 40px;
+}
+.lists_top{
+    line-height: 22px;
+    height: 22px;
+    border-bottom: 1px solid #51475F;
+}
+.lists_bottom{}
+.lists_tags{
+    font-style: italic;
+}
+.lists_description{
+    color: #8B8B8B;
+}
+.lists_title{
+
+}
+.lists_title a {
+    color: #242128;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+ }
+.lists_helps{
+    display: block;
+    width: 40px;
+    height: 40px;
+    float: right;
+    background-color: #51475F;
+    color: #F5F5F5;
+    line-height: 40px;
+    text-align: center;
     font-weight: bold;
 }
-ul.left_menu>li>a:hover {
-    color: #FF6600;
-}
-
-ul.left_menu li li{
-    border-bottom: 1px solid #282828;
-}
-ul.left_menu li li:hover {
-    background: #0F0F0F;
-    border-radius: 3px;
-    border-bottom: 1px solid #797979;
-}
-.activeMenu{
-    background: #0F0F0F;
-    border-radius: 3px;
-    border-bottom: 1px solid #797979 !important;
-}
-
-ul.left_menu li li a {
-    color: #d5d1ff;
-}
 
 
-ul.left_menu li ul {
-    padding: 0;
-    margin: 0 0 0 15px;
+/* TREE */
+.tree_content ul{
+    list-style: none;
 }
-
-ul#left_ul a {
-    padding-left: 6px;
+.tree_content>ul{
+    /*margin-left: 5px;*/
 }
-
-ul#left_ul a.collapsed {
-    background: url('../images/collapsed.png') left 3px no-repeat;
-}
-
-ul#left_ul a.expanded {
-    background: url('../images/expanded.png') left 3px no-repeat;
-}
-
-/*EDIT*/
-.edit{
+.tree_content>ul>li{
 
 }
-
-.edit input, .edit select, .edit textarea{
-    margin-bottom: 3px;
-    width: 100%;
+.tree_content>ul>li>a{
+    display: block;
+    padding: 1px 3px;
+    text-decoration: none;
+    background-color: #F5F5F5;
+    color: #51475F;
 }
-.edit textarea{
-    height: 600px;
+.tree_content>ul>li>ul{
+    margin-left: 20px;
 }
-.edit p{
-    padding: 0;
-    margin: 5px 0 1px;
-    text-indent: 0;
+.tree_content>ul>li>ul>li>a{
+    text-decoration: none;
+    color: #685881;
+}
+.tree_content>ul>li>ul>li>a:hover{
+    text-decoration: underline;
 }
 
-
-form.save_form{}
-form.save_form input[type=submit]{
+/* CONTENT BOX */
+.snip_top{
+    line-height: 22px;
+    border-bottom: 1px solid #595C82;
+}
+.snip_bottom{}
+.snip_private{
     margin-top: 10px;
-    padding: 2px 25px;
 }
-.save_btn{
+.snip_description{
+    margin-top: 10px;
+}
+.snip_content{
+    margin-top: 10px;
+}
+.snip_title{
+    font-size: 16px;
+}
+.snip_title a{
+    font-weight: bold;
+    text-decoration: none;
+}
+.snip_tags{
+    font-style: italic;
+}
+/*
+.round_btn{
+    background-color: #595C82;
+    color: #F5F5F5;
+    padding: 0 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.round_btn:hover{
+    background-color: #F5F5F5;
+    color: #595C82;
+}
+*/
+.round_btn{
+    background-color: #E4D3F5;
+    color: #595C82;
+    padding: 0 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.round_btn:hover{
+    background-color: #BEB0CC;
+    color: #595C82;
+}
+.help_dis{
+    color: #595C82;
+    padding: 0 6px;
+}
+
+
+/* USER BOX */
+.user_box{
+    margin: 5px 0 2px;
+}
+.user_box_r{}
+.user_box_l{
+}
+.user_box_name{
+    font-size: 16px;
+    line-height: 22px;
+    border-bottom: 1px solid #595C82;
+}
+.user_box_name a{
+    text-decoration: none;
+}
+.user_box_name a:hover{
+    text-decoration: underline;
+}
+.user_box_labels{
+    color: #595C82;
+    font-weight: bold;
+}
+.user_ava{
     text-align: right;
 }
 
-/*register form*/
-.register_form{
-    margin-left: 35%;
-    font-family: Consolas, "Courier New", Courier, monospace;
+
+
+/* edit
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.edit .edit_line{
+    margin: 5px 0;
 }
-.register_form input, .register_form select, .register_form input[type=file]{
-    width: 50%;
+.edit_line{
+    line-height: 16px;
+}
+.edit input[type=text]{
+    width: 100%;
+    border: 1px solid #9DC1E4;
     padding: 2px 5px;
 }
-.register_form textarea{
-    min-width: 50%;
-    max-width: 50%;
-    height: 60px;
-    min-height: 60px;
-    max-height: 120px;
-    margin-bottom: 10px;
+.edit input[type=checkbox]{
+    line-height: 16px;
+    vertical-align: middle;
 }
 
-.register_form_after{
-    display: block;
-    padding: 10px 50px;
-}
-
-.additional_settings{
-    display: none;
-}
-.additional_settings_show{
-    width:  50%;
-    border-bottom:  1px solid #797979;
+.edit input[type=submit]{
+    padding: 2px 5px;
+    background-color: #595C82;
+    color: #F5F5F5;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
-    margin: 15px 0 20px!important;;
-}
-.additional_settings_show:after{
-    content: " click";
-    color: #888;
-    font-size: 80%;
-}
-
-.file_upload{
-    width: 50%;
-    position: relative;
-    overflow: hidden;
-    font-size: 1em;        /* example */
-    height: 2em;           /* example */
-    line-height: 2em       /* the same as height */
-}
-.file_upload > .simple_btn{
-    float: right;
-    width: 8em;            /* example */
-    height: 100%;
-    line-height: 17px;
-    text-align: center;
-}
-.file_upload > div{
-    padding-left: 1em      /* example */
-}
-.file_upload input[type=file]{
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    transform: scale(20);
-    letter-spacing: 10em;     /* IE 9 fix */
-    -ms-transform: scale(20); /* IE 9 fix */
-    opacity: 0;
-    cursor: pointer
-}
-
-/*Checked box*/
-.checked_user{
-    margin: 15px auto 25px;
-}
-.checked_user_box{
-    display: block;
-    width: 25px;
-    height: 25px;
-    border-right: 1px solid #797979;
-    border-bottom: 1px solid #797979;
-    background-color: #181818;
-}
-.checked_user_box_ok{
-    background-color: #FFC66D;
-}
-
-.checked_user_text{
-    line-height: 25px;
-}
-.reg_error_text{
-    color: #ff5900;
-}
-
-
-/* sidebar_box */
-.sidebar_box{
-    margin-bottom: 25px;
-}
-.sidebar_box h2{
-    border-bottom: 2px solid #FE7F00;
-}
-.sidebar_box ul{
-    list-style: none;
-    padding: 0; margin: 0;
-}
-.sidebar_box ul li{
-    color: #E1E1E1;
-    font-size: 11px;
-    font-family: 'Ubuntu Condensed', 'Ubuntu', sans-serif; /*Consolas, "Courier New", Courier, monospace;*/
-}
-
-
-/* USER INFO BLOCK*/
-.user_info_l{}
-.user_info_l .user_ava{
-    text-align: right;
-}
-.user_info_l .user_ava img{
-    width: 75px;
-    height: 75px;
-}
-
-.user_info_r .fullname{
-    font-size: 14px;
     font-weight: bold;
 }
-.user_info_r .fullname:after{
-    content: " click";
-    color: #888;
-    font-size: 70%;
-    padding: 2px;
+
+.edit input[type=submit]:hover{
+    background-color: #51475F;
 }
 
-.user_info_r .edit_profile{
-    font-size: 10px;
-    font-weight: 100;
-    position: relative;
-    vertical-align: top;
+.edit textarea{
+    width: 100%;
+    max-width: 100%;
+    height: 500px;
+    border: 1px solid #9DC1E4;
+    padding: 2px 5px;
 }
-
-.user_info_r{}
-
-/* SERVICES INFO BLOCK*/
-
-
-
-
-
-/* PROFILE */
-.edit_space {
-    margin: 10px 0;
-}
-.edit_space>.simple_btn{
-    margin: 0 0 5px;
-}
-.space_btn{
-    display: block !important;
-    width: 100% !important;
-    text-align: center !important;
-    color: #FFC66D !important;
-}
-
-
-
 

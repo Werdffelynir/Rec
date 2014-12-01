@@ -14,13 +14,25 @@
 </head>
 <body <?= $this->bodyAttr?>>
 
-<?$this->out('header',true)?>
+    <div class="page">
 
-<?$this->out('menu',true)?>
+        <div class="header grid clear">
+            <?$this->pointOut('header',true)?>
+        </div>
 
-<?$this->out()?>
+        <div class="menu grid clear">
+            <?$this->pointOut('menu',true)?>
+        </div>
 
-<?$this->out('footer',true)?>
+        <div class="content grid clear">
+            <?$this->point()?>
+        </div>
+
+        <div class="footer grid clear">
+            <?$this->pointOut('footer',true)?>
+        </div>
+
+    </div>
 
 <?= $this->body?>
 </body>

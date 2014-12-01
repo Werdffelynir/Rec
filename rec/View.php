@@ -44,7 +44,6 @@ class View
     {
         $viewPartial = Rec::$pathApp.'Views/'.$partial.'.php';
 
-
         ob_start();
         extract($data);
         if(is_file($viewPartial))

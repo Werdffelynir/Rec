@@ -17,15 +17,15 @@ class Controller {
 
     public $applicationName = null;
     public $layout = 'main';
-    public $partial = 'main';
+    private $partial = 'main';
 
-    public $outPosition = array();
-    public $outPositionDefault = 'default';
+    public $viewPosition = array();
+    private $viewPositionDefault = 'default';
 
 
     public function __construct()
     {
-        $this->outPosition[$this->outPositionDefault] = null;
+        $this->viewPosition[$this->viewPositionDefault] = null;
         $this->applicationName = Rec::$applicationName;
         $this->bodyAttr = 'data-url="'.Rec::$url.'"';
     }
@@ -81,19 +81,21 @@ class Controller {
      * @param bool            $returned   по умолчанию возвращает результат
      * @return bool|string
      */
-    public function renderPartial($partial='', array $data = array(), $returned=true)
+    public function renderPartial($partial, array $data=[],$returned=true)
     {
         if(!$partial)
-            $this->partial = strtolower(Rec::$controller.'/'.Rec::$action);
+            $partial = strtolower(Rec::$controller.'/'.Rec::$action);
         else if(substr($partial,0,2) == '//')
-            $this->partial = substr($partial,2);
+            $partial = substr($partial,2);
         else
-            $this->partial = strtolower(Rec::$controller).'/'.$partial;
+            $partial = strtolower(Rec::$controller).'/'.$partial;
 
-        $view = View::renderPartial($this->partial, $data, true);
+        $view = View::renderPartial($partial,$data,true);
 
-        if($returned) return $view;
-        else echo $view;
+        if($returned)
+            return $view;
+        else
+            echo $view;
     }
 
 
@@ -101,10 +103,10 @@ class Controller {
      * @param string $partial   если не пустая строка по умолчанию Views/controller/method.php
      * @param array $data
      */
-    public function render($partial='//out', array $data = array())
+    public function render($partial='//out', array $data=[])
     {
-        if($partial!==false)
-            $this->outPosition[$this->outPositionDefault] = $this->renderPartial($partial, $data, true);
+        if($partial !== false)
+            $this->viewPosition[$this->viewPositionDefault] = $this->renderPartial($partial, $data, true);
 
         $this->renderLayout();
     }
@@ -132,18 +134,29 @@ class Controller {
      *
      * @param string $position
      * @param bool $skipExists
-     */
+
     public function out($position='default', $skipExists=false)
     {
-        if(array_key_exists($position, $this->outPosition)) {
-            echo $this->outPosition[$position];
+        $this->view($position,$skipExists);
+    }*/
+
+    public function point()
+    {
+        $this->pointOut('default');
+    }
+
+    public function pointOut($position, $skipExists=false)
+    {
+        if(array_key_exists($position, $this->viewPosition)) {
+            echo $this->viewPosition[$position];
         } else {
+
             if(!$skipExists) {
                 if(Rec::$debug)
                     Rec::ExceptionError('Out position undefined', $position);
             } else {
-                $this->addOut([$position=>'']);
-                $this->out($position,$skipExists);
+                $this->addPoints([$position=>'']);
+                $this->point($position,$skipExists);
             }
         }
     }
@@ -161,11 +174,17 @@ class Controller {
      * Теперь в виде данные позиций можно вывести $this->out('column1')
      *
      * @param array $data
-     */
+
     public function addOut(array $data)
     {
-        foreach($data as $variablePosition=>$variableData){
-            $this->outPosition[$variablePosition]=$variableData;
+        $this->addView($data);
+    } */
+
+    public function addPoints(array $data)
+    {
+        foreach($data as $variablePosition=>$variableData)
+        {
+            $this->viewPosition[$variablePosition]=$variableData;
         }
     }
 
@@ -175,21 +194,29 @@ class Controller {
      * @param string $position          название позиции
      * @param null|string $variableData строка данных
      * @param bool $skipExists          создает позицию если не существует, и устанавлевает ей значение, false поумолчанию
-     */
+
     public function setOut($position='default', $variableData = null, $skipExists=false)
     {
-        if(array_key_exists($position, $this->outPosition)){
-            $this->outPosition[$position]=$variableData;
+        $this->setView($position,$variableData,$skipExists);
+    } */
+
+    public function intoPoint($position, $variableData=null, $skipExists=false)
+    {
+        if(array_key_exists($position, $this->viewPosition))
+        {
+            $this->viewPosition[$position]=$variableData;
+
         }else{
             if(!$skipExists) {
                 if(Rec::$debug)
                     Rec::ExceptionError('Out position undefined', $position);
             } else {
-                $this->addOut([$position=>'']);
-                $this->setOut($position,$variableData,$skipExists);
+                $this->addPoints([$position=>'']);
+                $this->intoPoint($position,$variableData,$skipExists);
             }
         }
     }
+
 
     /**
      * @param string $url
@@ -313,27 +340,27 @@ class Controller {
 
     public function hookRegister($event, $callback = null, array $params = array())
     {
-        return Component::hookRegister($event,$callback,$params);
+        return Event::hookRegister($event,$callback,$params);
     }
 
     public function hookTrigger($event, array $params = array())
     {
-        Component::hookTrigger($event,$params);
+        Event::hookTrigger($event,$params);
     }
 
     public function filterRegister($filterName, $callable, $acceptedArgs = 1)
     {
-        Component::filterRegister($$filterName, $callable, $acceptedArgs);
+        Event::filterRegister($$filterName, $callable, $acceptedArgs);
     }
 
     public function filterTrigger($filterName, $args)
     {
-        Component::filterTrigger($filterName, $args);
+        Event::filterTrigger($filterName, $args);
     }
 
     public function flash($key = null, $value = null, $keep = true)
     {
-        return Component::flash($key, $value, $keep);
+        return Event::flash($key, $value, $keep);
     }
 
 

@@ -153,6 +153,7 @@ class Rec
     private function autoloadClasses()
     {
         include_once('Component.php');
+        include_once('Event.php');
         include_once('View.php');
         include_once('Controller.php');
         include_once('Request.php');
