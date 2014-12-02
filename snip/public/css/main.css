@@ -64,12 +64,19 @@ a:hover{
 ul, ol{
     list-style: none;
 }
-
+pre, code{
+    font-family: Consolas, "Courier New", Courier, monospace;
+    font-size: 12px;
+}
 /* PAGE
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .page{
-    width: 1080px;
+    width: 1100px;
     margin: 0 auto;
+    /*background-color: #F5F5F5;*/
+    border-left: 1px solid #F5F5F5;
+    border-right: 1px solid #F5F5F5;
+    /*box-shadow: 0 0 16px 10px rgba(81,71,95,0.4);*/
 }
 
 
@@ -77,20 +84,29 @@ ul, ol{
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .header{
     height: 35px;
-    padding: 5px;
-    background-color: #51475F;
-    color: #FFFFFF;
+    background-color: #3F354D;
+    color: #F5F5F5;
 }
 
-.header_title{}
+.header_title{
+    padding: 5px;
+}
+.header_title h2>a{
+    text-decoration: none;
+    color: #F5F5F5;
+}
 
 .header_search_form{
-    line-height: 24px;
+    height: 100%;
+    background-color: #3A3147;
 }
 .header_search_form input{
-    width: 400px;
+    width: 90%;
+    height: 100%;
     border: none;
-    padding: 3px 5px 1px;
+    padding: 0 15px;
+    background-color: #3A3147;
+    color: #e8e6ff;
 }
 .header_search_form a{
     padding: 0 5px;
@@ -103,6 +119,7 @@ ul, ol{
 }
 
 .header_menu{
+    padding: 5px;
     line-height: 24px;
     text-align: right;
 }
@@ -281,11 +298,20 @@ ul, ol{
 .snip_private{
     margin-top: 10px;
 }
+.snip_header{
+    background-color: #F5F5F5;
+    color: #51475F;
+}
 .snip_description{
-    margin-top: 10px;
+    padding: 5px;
+    color: #6E658B;
+    /*font-family: Consolas, "Courier New", Courier, monospace;
+    font-size: 12px;*/
 }
 .snip_content{
     margin-top: 10px;
+    /*font-family:  Consolas, "Courier New", Courier, monospace;
+    font-size: 12px;*/
 }
 .snip_title{
     font-size: 16px;
@@ -312,7 +338,7 @@ ul, ol{
 }
 */
 .round_btn{
-    background-color: #E4D3F5;
+    background-color: rgb(245,245,245);
     color: #595C82;
     padding: 0 6px;
     border-radius: 8px;
@@ -320,12 +346,13 @@ ul, ol{
     font-weight: bold;
 }
 .round_btn:hover{
-    background-color: #BEB0CC;
+    background-color: rgb(209,209,209);
     color: #595C82;
 }
 .help_dis{
     color: #595C82;
     padding: 0 6px;
+    margin-right: 25px;
 }
 
 
@@ -367,8 +394,9 @@ ul, ol{
 }
 .edit input[type=text]{
     width: 100%;
-    border: 1px solid #9DC1E4;
+    border: 1px solid #E4D3F5;
     padding: 2px 5px;
+    background-color: #FFFFFF;
 }
 .edit input[type=checkbox]{
     line-height: 16px;
@@ -393,7 +421,10 @@ ul, ol{
     width: 100%;
     max-width: 100%;
     height: 500px;
-    border: 1px solid #9DC1E4;
-    padding: 2px 5px;
+    border: 1px solid #E4D3F5;
+    padding: 5px;
+    background-color: #FFFFFF;
+    font-size: 12px;
+    font-family: Consolas, "Courier New", Courier, monospace, 'Ubuntu Mono', 'Droid Sans Mono';
 }
 

@@ -5,8 +5,8 @@
     <title>Document</title>
     <link rel="stylesheet" href="public/css/grid.css"/>
     <link rel="stylesheet" href="public/css/main.css"/>
-    <link rel="stylesheet" href="public/css/common.css"/>
-    <link rel="stylesheet" href="public/css/elements.css"/>
+<!--    <link rel="stylesheet" href="public/css/common.css"/>
+    <link rel="stylesheet" href="public/css/elements.css"/>-->
 
     <script type="text/javascript" src="public/js/jquery.js"></script>
     <script type="text/javascript" src="public/js/main.js"></script>

@@ -46,4 +46,7 @@ $R->setConf(
 $R->urlDefault('Index');
 $R->urlNotFound('Index/error404');
 
+$R->urlAdd('Index/cat','cat/{p:link}');
+$R->urlAdd('Index/snippet','snippet/{p:id}');
+
 $R->run();

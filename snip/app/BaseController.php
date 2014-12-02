@@ -23,8 +23,7 @@ class BaseController extends Controller
         $this->addScript('common','js/common.js');
 
         $this->addStyle('grid','css/grid.css',1);
-        $this->addStyle('common','css/common.css');
-        $this->addStyle('elements','css/elements.css');
+        $this->addStyle('main','css/main.css');
     }
 
     public function renderPoints($point='', array $data=[])
@@ -46,13 +45,13 @@ class BaseController extends Controller
         switch($point)
         {
             case 'header':
-                $points['header'] = $this->renderPartial('//layout/header');
+                $points['header'] = $this->renderPartial('//layout/header', $data);
                 break;
             case 'menu':
-                $points['menu'] = $this->renderPartial('//layout/menu');
+                $points['menu'] = $this->renderPartial('//layout/menu', $data);
                 break;
             case 'footer':
-                $points['footer'] = $this->renderPartial('//layout/footer');
+                $points['footer'] = $this->renderPartial('//layout/footer', $data);
                 break;
         }
 
