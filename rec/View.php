@@ -153,7 +153,7 @@ class View
                 return ($arg1['depth']>$arg2['depth'])?1:-1;
             });
             foreach(self::$stackStylesData as $style){
-                $htmlHead .= "<link href=\"{$style['src']}\" rel=\"stylesheet\" type=\"text/css\" />\n";
+                $htmlHead .= "<link href=\"{$style['href']}\" rel=\"{$style['rel']}\" type=\"{$style['type']}\" />\n";
             }
         }
         if(!empty(self::$stackScriptsData)){
@@ -269,14 +269,27 @@ class View
      * @param null $src
      * @param null $depth
      */
-    public static function addStyle($data, $src=null, $depth=null)
+    public static function addStyle($data, $src, $depth=null)
     {
         if(is_string($data))
         {
+            $href = '';
+            $rel = 'stylesheet';
+            $type = 'text/css';
+
             if($depth==null) $depth = self::$stackDefaultDepth;
             self::$stackStylesData[$data]['name'] = $data;
-            self::$stackStylesData[$data]['src'] = '/public/'.trim($src,'/');
             self::$stackStylesData[$data]['depth'] = $depth;
+            if(is_array($src)){
+                $href = (isset($src['href']))?$src['href']:$href;
+                $rel = (isset($src['rel']))?$src['rel']:$rel;
+                $type = (isset($src['type']))?$src['type']:$type;
+            }else
+                $href = $src;
+
+            self::$stackStylesData[$data]['href'] = '/public/'.trim($href,'/');
+            self::$stackStylesData[$data]['rel'] = $rel;
+            self::$stackStylesData[$data]['type'] = $type;
         }
         else if(is_array($data))
         {

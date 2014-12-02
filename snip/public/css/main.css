@@ -180,6 +180,8 @@ pre, code{
 .tree_menu, .line_menu{
     background-color: #595C82;
     padding: 5px;
+    color: #FFACFF;
+    font-size: 16px;
 }
 .tree_menu a, .line_menu a{
     padding: 3px 10px;
@@ -228,9 +230,9 @@ pre, code{
     width: 40px;
 }
 .lists_top{
-    line-height: 22px;
     height: 22px;
-    border-bottom: 1px solid #51475F;
+    line-height: 22px;
+    background-color: #51475F;
 }
 .lists_bottom{}
 .lists_tags{
@@ -240,14 +242,16 @@ pre, code{
     color: #8B8B8B;
 }
 .lists_title{
-
+    padding-left: 5px;
 }
-.lists_title a {
-    color: #242128;
-    text-decoration: none;
+.lists_title a{
+    color: #F5F5F5;
+    font-family: Consolas, "Courier New", Courier, monospace;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 14px;
+    text-decoration: none;
  }
+
 .lists_helps{
     display: block;
     width: 40px;
