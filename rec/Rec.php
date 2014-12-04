@@ -7,7 +7,10 @@ class Rec
 {
     /** @var bool $debug */
     public static $debug = true;
-
+    /** @var string $lang dynamic */
+    public static $lang;
+    /** @var string $langDefault base */
+    private static $langDefault;
     /** @var string $applicationName */
     public static $applicationName = 'Web Application';
 
@@ -40,8 +43,8 @@ class Rec
 
     private $controllerPath = null;
     private $recPath = null;
-    private $recUrls = array();
 
+    public $recRoutes;
 
     /**
      * @param null $appPath
@@ -51,31 +54,50 @@ class Rec
     {
         self::$debug = $debug;
 
-        self::$urlDomain = $_SERVER['HTTP_HOST'];
-        self::$urlPart = substr($_SERVER['PHP_SELF'], 0, -9);
-        self::$protocol = ($_SERVER['REQUEST_URI']=='on')?'https':'http';
-        self::$url = self::$urlPart;
-        self::$urlFull = self::$protocol.'://'.self::$urlDomain . self::$urlPart;
-        self::$urlCurrent = self::$protocol.'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-        self::$path = substr($_SERVER['SCRIPT_FILENAME'], 0, -9);
-        self::$pathApp = ($appPath == null) ? self::$path : self::$path . $appPath.'/';
+        $scriptFilename = $_SERVER['SCRIPT_FILENAME'];
+        $requestUri = $_SERVER['REQUEST_URI'];
+        $httpHost = $_SERVER['HTTP_HOST'];
+        $phpSelf = $_SERVER['PHP_SELF'];
 
-        $this->request = str_replace( trim(self::$urlPart,'/'), '',  trim($_SERVER['REQUEST_URI'],'/'));
+        self::$urlDomain = $httpHost;
+        self::$protocol = ($requestUri=='on')?'https':'http';
+
+        self::$url = substr($phpSelf,0,-9);
+        self::$urlFull = self::$protocol.'://'.self::$urlDomain.self::$url;
+        self::$urlCurrent = self::$protocol.'://'.self::$urlDomain.$requestUri;
+
+        self::$path = substr($scriptFilename,0,-9);
+        self::$pathApp = ($appPath==null) ? self::$path : self::$path.$appPath.'/';
+
         $this->recPath = __DIR__;
+        $this->request = str_replace( trim(self::$urlPart,'/'), '',  trim($requestUri,'/'));
+
     }
 
+    /**
+     * Пользовательская установка языка
+     * @param $lang
+     */
+    public function setLanguage($lang)
+    {
+        self::$langDefault = $lang;
+        self::$lang = $lang;
+    }
 
     /**
-     * check secondary params in class url
-     * @param $class
-     * @return string
+     * Вкл. обработку мультиязычности
      */
-    public function checkClass($class)
+    private function languageInstall()
     {
-        if (strpos($class, '/') === false)
-            return $class . '/index';
-        else
-            return $class;
+        if(self::$lang)
+        {
+            if(strlen($this->request)==2 || strpos($this->request,'/')==2)
+            {
+                $lang = substr($this->request,0,2);
+                self::$lang = $lang;
+                $this->request = (substr($this->request,2)==false)?'':substr($this->request,3);
+            }
+        }
     }
 
     /**
@@ -91,35 +113,38 @@ class Rec
      * set url to default app start page
      * @param $class
      */
-    public function urlDefault($class)
+    public function routeDefault($class)
     {
-        $this->recUrls['recUrlDefault'] = $this->checkClass($class);
+        $this->recRoutes['routeDefault'] = $this->checkClass($class);
     }
 
     /**
      * set url to page 404
      * @param $class
      */
-    public function urlNotFound($class)
+    public function routePageNotFound($class)
     {
-        $this->recUrls['recUrlNotFound'] = $this->checkClass($class);
+        $this->recRoutes['routePageNotFound'] = $this->checkClass($class);
     }
 
-    /**
-     *
-     * @param $class
-     * @param $url
-     */
-    public function urlAdd($class, $url)
+    public function route($class, $url=null)
     {
-        $param = null;
-        $regexp = null;
-        $args = null;
+        $param = $regexp = $args = null;
+        $type = 'base';
 
-        if ($paramPos = strpos($url, '{')) {
-            $_url = $url;
+        if(strpos($class,'/')===false){
+            $urlSet = ($url==null) ? '/{p}/{p}/{p}/{p}' : '/{p}/'.$url;
+            $url = strtolower($class).$urlSet;
+            $type = 'free';
+        }
+        else
+            $class = $this->checkClass($class);
+
+        if ($paramPos = strpos($url, '{'))
+        {
+            $urlBase = $url;
             $url = substr($url, 0, $paramPos - 1);
-            $param = substr($_url, $paramPos);
+            $param = substr($urlBase, $paramPos);
         }
 
         $paramValues = array(' '=>'', '/'=>'\/*', '{n}'=>'(\d*)', '{w}'=>'([a-z_]*)', '{p}'=>'(\w*)',
@@ -138,12 +163,101 @@ class Rec
 
         $regexp = '|^('.strtr($url,$paramValues).')\/*'.strtr($param,$paramValues).'$|';
 
-        $this->recUrls[$url] = [
-            'class' => $this->checkClass($class),
+        $this->recRoutes[$url] = [
+            'class' => $class,
             'param' => $param,
             'regexp' => $regexp,
             'args' => $args,
+            'type' => $type,
         ];
+    }
+
+    public function determine()
+    {
+        $classMethods = $params = $args = [];
+
+        foreach (array_keys($this->recRoutes) as $key)
+        {
+            if($key=='routeDefault' || $key=='routePageNotFound')
+                continue;
+
+            $request = $this->request;
+
+            if($_part = strpos($this->request,'/'))
+                $request = substr($this->request, 0, $_part);
+
+            if ($request == $key)
+            {
+                if(preg_match($this->recRoutes[$key]['regexp'], $this->request, $result))
+                {
+                    if($this->recRoutes[$key]['type']=='free')
+                    {
+                        $classMethods[0] = $this->recRoutes[$key]['class'];
+
+                        if(empty($result[2]))
+                            $classMethods[1] = 'index';
+                        else
+                            $classMethods[1] = $result[2];
+
+                        if (count($result) > 3) {
+                            $params = array_slice($result, 3);
+                            $args = null;
+                        }
+                        continue;
+
+                    }else{
+
+                        $classMethods = explode('/', $this->recRoutes[$key]['class']);
+
+                        if (count($result) > 2) {
+                            $params = array_slice($result, 2);
+                            $args = null;
+                        }
+                        continue;
+                    }
+
+                }
+
+                if(!empty($this->recRoutes[$key]['args']) && !empty($params))
+                    $args = array_combine($this->recRoutes[$key]['args'], $params);
+            }
+
+        }
+
+        if(!empty($classMethods))
+        {
+            self::$controller = $classMethods[0];
+            self::$action = $classMethods[1];
+            self::$params = (!empty($params[0])) ? explode('/',$params[0]) : [];
+            self::$args = $args;
+
+            $this->controllerPath = $this->checkController($classMethods[0]);
+
+        }else{
+
+            // порверка параметров
+            if(empty($this->recRoutes['routeDefault']))
+                self::ExceptionError('Config option "routeDefault" undefined. Set value to method routeDefault("ControllerName")');
+
+            $default = explode('/',$this->recRoutes['routeDefault']);
+
+            if(empty($this->recRoutes['routePageNotFound']))
+                $notFound = [$default[0],'error404'];
+            else
+                $notFound = explode('/',$this->recRoutes['routePageNotFound']);
+
+            if($this->request === '' || $this->request === '/')
+                $classMethods = $default;
+            elseif($this->request == 'error404' || $this->request == '404')
+                $classMethods = $notFound;
+            else
+                $classMethods = $notFound;
+
+            self::$controller = $classMethods[0];
+            self::$action = $classMethods[1];
+
+            $this->controllerPath = $this->checkController($classMethods[0]);
+        }
     }
 
 
@@ -178,88 +292,25 @@ class Rec
 
 
     /**
-     * Base routes configs
-     *
+     * check secondary params in class url
+     * @param $class
      * @return string
      */
-    private function determineBaseParams()
+    private function checkClass($class)
     {
-
-        if(empty($this->recUrls['recUrlDefault']))
-            self::ExceptionError('Config option "recUrlDefault" UNDEFINED. Set value to method urlDefault("ControllerName")');
-        $requestUrlDefault = explode('/',$this->recUrls['recUrlDefault']);
-
-        if(empty($this->recUrls['recUrlNotFound']))
-            $requestUrlNotFound = [$requestUrlDefault[0],'error404'];
+        if (strpos($class, '/') === false)
+            return $class . '/index';
         else
-            $requestUrlNotFound = explode('/',$this->recUrls['recUrlNotFound']);
-
-        if($this->request === '' || $this->request === '/')
-            $classMethods = $requestUrlDefault;
-        elseif($this->request == 'error404' || $this->request == '404')
-                $classMethods = $requestUrlNotFound;
-        else
-            $classMethods = $requestUrlNotFound;
-
-        self::$controller = $classMethods[0];
-        self::$action = $classMethods[1];
-
-        $this->controllerPath = $this->controllerChecked($classMethods[0]);
-
-        $this->determineUrls();
+            return $class;
     }
 
-
-    /**
-     * @return string
-     */
-    private function determineUrls()
+    private function checkMethod($method)
     {
-        $classMethods = [];
-        $params = [];
-        $args = [];
-
-        foreach (array_keys($this->recUrls) as $kr)
-        {
-            if($kr=='recUrlDefault' || $kr=='recUrlNotFound')
-                continue;
-
-            $request = $this->request;
-
-            if($_part = strpos($this->request,'/'))
-                $request = substr($this->request,0,$_part);
-
-            if ($request==$kr)
-            {
-                if(preg_match($this->recUrls[$kr]['regexp'], $this->request, $result))
-                {
-                    $classMethods = explode('/',$this->recUrls[$kr]['class']);
-                    if(count($result) > 2)
-                    {
-                        array_shift($result);
-                        array_shift($result);
-                        $params = (isset($result)) ? $result : array();
-                        $args = null;
-                    }
-                }
-
-                if(!empty($this->recUrls[$kr]['args']) && !empty($params))
-                    $args = array_combine($this->recUrls[$kr]['args'], $params);
-            }
-
-        }
-
-        if(!empty($classMethods))
-        {
-            self::$controller = $classMethods[0];
-            self::$action = $classMethods[1];
-            self::$params = (!empty($params[0])) ? explode('/',$params[0]) : [];
-            self::$args = $args;
-
-            $this->controllerPath = $this->controllerChecked($classMethods[0]);
-        }
+        if (strpos($method, '/') === false)
+            return $this->recRoutes['routeDefault'].'/'.$method;
+        else
+            return $method;
     }
-
 
     /**
      * Проверка файла контролера, назначение параметров
@@ -267,7 +318,7 @@ class Rec
      * @param string $controllerName Имя контролера
      * @return string Путь к контролеру
      */
-    private function controllerChecked($controllerName)
+    private function checkController($controllerName)
     {
         if(!$controllerName)
             return null;
@@ -287,18 +338,21 @@ class Rec
 
     public function run()
     {
+        # обработка мультиязычности, если пользователем был установлен параметр
+        $this->languageInstall();
+
         #start autoload classes
         $this->autoloadClasses();
 
         #determine request params
-        $this->determineBaseParams();
+        $this->determine();
 
         $classControllerName = '\\app\\Controllers\\'.self::$controller;
+
         if(class_exists( $classControllerName ))
         {
             /** @var Controller $controllerObj */
             $controllerObj = new $classControllerName;
-            $controllerObj->init();
 
             /** @var array $controllerActions обработка динамических запросов */
             if($controllerActions = $controllerObj->actions())
@@ -307,22 +361,28 @@ class Rec
                 {
                     if($this->request == $casVal)
                     {
-                        self::$action = $casKey;
+                        if($controllerPosition = strpos($casKey,'/'))
+                        {
+                            $ctrlAction = '\\app\\Controllers\\'.substr($casKey,0,$controllerPosition);
+                            $methodAction = substr($casKey,$controllerPosition+1);
+                            if(class_exists( $ctrlAction ))
+                            {
+                                $controllerObj = new $ctrlAction;
+                                self::$action = $methodAction;
+                            }
+                        }
+                        else
+                            self::$action = $casKey;
+
                         continue;
                     }
                 }
             }
 
-            /*
-            $generateData = View::generate();
-            $controllerObj->body = $generateData['body'];
-            $controllerObj->head = $generateData['head'];
-            */
+            $controllerObj->init();
 
             if (method_exists($controllerObj, self::$action))
             {
-
-
                 if(self::$action=='error404')
                     header("HTTP/1.0 404 Not Found");
 

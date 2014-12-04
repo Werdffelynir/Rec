@@ -28,6 +28,9 @@ class Controller {
         $this->viewPosition[$this->viewPositionDefault] = null;
         $this->applicationName = Rec::$applicationName;
         $this->bodyAttr = 'data-url="'.Rec::$url.'"';
+
+        if(Rec::$lang)
+            $this->lang = Rec::$lang;
     }
 
     public function init(){}
@@ -132,20 +135,23 @@ class Controller {
     /**
      * Позиция вывода контента render() в layout шаблоне
      *
-     * @param string $position
-     * @param bool $skipExists
-
-    public function out($position='default', $skipExists=false)
+     * @param null $position
+     */
+    public function point($position=null)
     {
-        $this->view($position,$skipExists);
-    }*/
-
-    public function point()
-    {
-        $this->pointOut('default');
+        if($position != null)
+            $this->pointOut($position, true);
+        else
+            $this->pointOut('default');
     }
 
-    public function pointOut($position, $skipExists=false)
+
+    /**
+     * Дополнительные позиции вывода
+     * @param $position
+     * @param bool $skipExists
+     */
+    private function pointOut($position, $skipExists=false)
     {
         if(array_key_exists($position, $this->viewPosition)) {
             echo $this->viewPosition[$position];

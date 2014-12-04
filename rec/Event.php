@@ -6,7 +6,6 @@ namespace rec;
 class Event
 {
     private static $_hookBind = [];
-    private static $_hookCurlBind = [];
     private static $_filterBind = [];
     private static $_flashStorage = [];
 
