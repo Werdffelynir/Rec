@@ -44,7 +44,7 @@ class Controller {
 
     public function error404()
     {
-        $urlCurrent = Rec::$urlCurrent;
+        $urlCurrent = Rec::$urlCurrentFull;
         $linkHome = Rec::$url;
         $linkBeck = (isset($_SERVER['HTTP_REFERER']))?$_SERVER['HTTP_REFERER']:'#';
 

@@ -335,4 +335,39 @@ class View
             throw new \ErrorException();
     }
 
+
+    /**
+     * Возвращает или сравнивает языковый индификатор
+     *
+     * @param null $lang
+     * @return bool|string
+     */
+    public static function lang($lang=null)
+    {
+        if($lang == null)
+            return Rec::$lang;
+        elseif($lang === Rec::$lang)
+            return true;
+        else
+            return false;
+    }
+
+
+    /**
+     * Возвращает кодированую ссылку с подставленным языковым индификатором
+     *
+     * @param $string
+     * @param null $lang
+     * @return string
+     */
+    public static function langUrl($string, $lang=null)
+    {
+        if($lang == null)
+            $lang = Rec::$lang;
+
+        return '/'.$lang.'/'.urlencode($string);
+    }
+
+
+
 } 

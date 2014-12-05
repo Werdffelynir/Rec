@@ -14,8 +14,8 @@ class Rec
     /** @var string $applicationName */
     public static $applicationName = 'Web Application';
 
-    /** @var null|string $protocol */
-    public static $protocol = null;
+    /** @var null|string $urlProtocol */
+    public static $urlProtocol = null;
     /** @var null|string $url */
     public static $url = null;
     /** @var null|string $urlFull */
@@ -26,6 +26,8 @@ class Rec
     public static $urlDomain = null;
     /** @var null|string $urlCurrent */
     public static $urlCurrent = null;
+    /** @var null|string $urlFullCurrent */
+    public static $urlCurrentFull = null;
 
     /** @var null|string $path 'D:/server/domains/test.loc/rec/' */
     public static $path = null;
@@ -52,25 +54,23 @@ class Rec
      */
     public function __construct($appPath=null, $debug=true)
     {
+        $requestUri = $_SERVER['REQUEST_URI'];
+
         self::$debug = $debug;
 
-        $scriptFilename = $_SERVER['SCRIPT_FILENAME'];
-        $requestUri = $_SERVER['REQUEST_URI'];
-        $httpHost = $_SERVER['HTTP_HOST'];
-        $phpSelf = $_SERVER['PHP_SELF'];
+        self::$urlDomain = $_SERVER['HTTP_HOST'];
+        self::$urlProtocol = ($requestUri=='on')?'https':'http';
 
-        self::$urlDomain = $httpHost;
-        self::$protocol = ($requestUri=='on')?'https':'http';
+        self::$url = substr($_SERVER['PHP_SELF'],0,-9);
+        self::$urlFull = self::$urlProtocol.'://'.self::$urlDomain.self::$url;
+        self::$urlCurrent = $requestUri;
+        self::$urlCurrentFull = self::$urlProtocol.'://'.self::$urlDomain.$requestUri;
 
-        self::$url = substr($phpSelf,0,-9);
-        self::$urlFull = self::$protocol.'://'.self::$urlDomain.self::$url;
-        self::$urlCurrent = self::$protocol.'://'.self::$urlDomain.$requestUri;
-
-        self::$path = substr($scriptFilename,0,-9);
+        self::$path = substr($_SERVER['SCRIPT_FILENAME'],0,-9);
         self::$pathApp = ($appPath==null) ? self::$path : self::$path.$appPath.'/';
 
         $this->recPath = __DIR__;
-        $this->request = str_replace( trim(self::$urlPart,'/'), '',  trim($requestUri,'/'));
+        $this->request = trim($requestUri,'/');
 
     }
 
@@ -95,7 +95,9 @@ class Rec
             {
                 $lang = substr($this->request,0,2);
                 self::$lang = $lang;
-                $this->request = (substr($this->request,2)==false)?'':substr($this->request,3);
+                self::$urlCurrent = '/'.substr($this->request,3);
+                self::$urlCurrentFull = self::$urlProtocol.'://'.self::$urlDomain.self::$urlCurrent;
+                $this->request = (substr($this->request,2)===false) ? '' : substr($this->request,3);
             }
         }
     }
@@ -432,6 +434,7 @@ class Rec
             self::$conf[$key]=$value;
         }
     }
+
     public static function conf($key)
     {
         if(isset(self::$conf[$key]))
@@ -537,7 +540,7 @@ class Rec
                 </head><body>
                 <div class='box404'>
                     <h1>Warning! throw Exception.</h1><hr/>
-                    <a href='".self::$urlCurrent."'>Reload page</a>
+                    <a href='".self::$urlCurrentFull."'>Reload page</a>
                     <p class='text'><b>Message:</b> <code>" . $errorMsg . "</code></p>
                     <p class='text'><b>File:</b> <code>" . $fileName . "</code></p>
                     <h3>Trace As String:</h3>
