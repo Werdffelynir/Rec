@@ -152,7 +152,7 @@ class Rec
         $paramValues = array(' '=>'', '/'=>'\/*', '{n}'=>'(\d*)', '{w}'=>'([a-z_]*)', '{p}'=>'(\w*)',
             '{!n}'=>'(\d+)', '{!w}'=>'([a-zA-Z_]+)', '{!p}'=>'(\w+)','{*}'=>'([\w\/-]*)');
 
-        if(strpos($param,':') !==false)
+        if(strpos($param,':') !== false)
         {
             preg_match_all('|\:(\w+)|', $param, $result);
             if(!empty($result[0])) {
